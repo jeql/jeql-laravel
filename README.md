@@ -1,1 +1,1 @@
-# JEQL Laravel package
+# JEQL Laravel server package
