@@ -19,8 +19,6 @@ class JeqlServiceProvider extends ServiceProvider
             return new Type;
         });
 
-        $this->app->bind(Request::class);
-
         $this->app->resolving(Request::class, function(Request $request) {
             $request->validate();
         });
