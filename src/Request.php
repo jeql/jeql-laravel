@@ -2,6 +2,8 @@
 
 namespace Jeql;
 
+use Illuminate\Http\Request as HttpRequest;
+use Illuminate\Support\Facades\Validator;
 use Jeql\Contracts\Request as RequestContract;
 
 abstract class Request implements RequestContract
@@ -12,7 +14,7 @@ abstract class Request implements RequestContract
     /**
      * @param \Illuminate\Http\Request $httpRequest
      */
-    public function __construct(Request $httpRequest)
+    public function __construct(HttpRequest $httpRequest)
     {
         $this->httpRequest = $httpRequest;
     }
