@@ -2,10 +2,17 @@
   "name": "jeql/laravel-server",
   "description": "JEQL Laravel package",
   "keywords": [],
-  "require": {},
+  "require": {
+    "illuminate/contracts": "5.7.*",
+    "illuminate/http": "5.7.*",
+    "illuminate/support": "5.7.*",
+    "illuminate/validation": "5.7.*"
+  },
   "require-dev": {},
   "autoload": {
-    "psr-4": {},
+    "psr-4": {
+      "Jeql\\": "src/"
+    },
     "files": []
   }
 }
