@@ -3,97 +3,61 @@
 namespace Jeql;
 
 use Illuminate\Http\Request as HttpRequest;
-use Illuminate\Support\Facades\Validator;
-use Jeql\Contracts\Request as RequestContract;
+use Jeql\Bags\ArgumentBag;
+use Jeql\Bags\RequestedFieldBag;
 
-abstract class Request implements RequestContract
+class Request extends Context
 {
-    /** @var \Illuminate\Http\Request */
-    protected $httpRequest;
+    /** @var ArgumentBag */
+    protected $argumentBag;
+
+    /** @var RequestedFieldBag  */
+    protected $requestedFieldBag;
 
     /**
-     * @param \Illuminate\Http\Request $httpRequest
+     * Request constructor.
+     *
+     * @param HttpRequest $request
      */
-    public function __construct(HttpRequest $httpRequest)
+    public function __construct(HttpRequest $request)
     {
-        $this->httpRequest = $httpRequest;
+        $arguments = $request->json('arguments');
+        $fields = $request->json('fields');
+
+        $this->argumentBag = new ArgumentBag($arguments);
+        $this->fieldBag = new RequestedFieldBag($fields);
+    }
+
+    public function getArguments()
+    {
+        return $this->argumentBag;
     }
 
     /**
      * @param string $key
-     * @param mixed|null $default
      *
      * @return mixed
      */
-    public function get(string $key, $default = null)
+    public function getArgument(string $key)
     {
-        $key = "arguments.{$key}";
-
-        return $this->httpRequest->json($key, $default);
+        return $this->argumentBag()->get($key);
     }
 
     /**
-     * @return array
+     * @return RequestedFieldBag
      */
-    public function all(): array
+    public function getFields(): RequestedFieldBag
     {
-        return $this->httpRequest->json('arguments') ?? [];
+        return $this->requestedFieldBag;
     }
 
     /**
-     * @return mixed|array todo InputObjectDefinitionThingy
+     * @param string $key
+     *
+     * @return RequestedField|mixed|null
      */
-    protected function arguments()
+    public function getField(string $key)
     {
-        return [];
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    public function validate()
-    {
-        $this->validateSyntax();
-
-        $this->validateArguments();
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    protected function validateSyntax()
-    {
-        $rules = [
-            'arguments' => ['array'],
-        ];
-
-        $validator = Validator::make($this->all(), $rules);
-
-        if ($validator->fails()) {
-
-            // todo EXCEPTION HANDLING
-            throw new \Exception('Syntax validation failed.');
-        }
-    }
-
-    /**
-     * @return void
-     * @throws \Exception
-     */
-    protected function validateArguments()
-    {
-        $rules = array_map(function($item) {
-            return $item->rules();
-        }, $this->arguments());
-
-        $validator = Validator::make($this->all(), $rules);
-
-        if ($validator->fails()) {
-
-            // todo EXCEPTION HANDLING
-            throw new \Exception('Argument validation failed.');
-        }
+        return $this->getFields()->get($key);
     }
 }
