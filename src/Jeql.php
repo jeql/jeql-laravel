@@ -5,6 +5,7 @@ namespace Jeql;
 use Jeql\Http\Controllers\BatchController;
 use Jeql\Http\Controllers\IntrospectController;
 use Jeql\Http\Controllers\OperationsController;
+use Illuminate\Routing\Router;
 
 class Jeql
 {
@@ -16,18 +17,18 @@ class Jeql
      *
      * @return void
      */
-    public static function routes()
+    public static function routes(Router $router)
     {
-        $router = app()->make('router');
+        $router->group(['namespace' => null], function ($router) {
+            // Route to handle batch calls
+            $router->post('_batch', BatchController::class . '@handle');
 
-        // Route to handle batch calls
-        $router->post('_batch', BatchController::class . '@handle');
+            // Route to retrieve introspect
+            $router->post('_introspect', IntrospectController::class . '@handle');
 
-        // Route to retrieve introspect
-        $router->post('_introspect', IntrospectController::class . '@handle');
-
-        // Route to handle all operations
-        $router->post('{operation}', OperationsController::class . '@handle');
+            // Route to handle all operations
+            $router->post('{operation}', OperationsController::class . '@handle');
+        });
     }
 
     /**
