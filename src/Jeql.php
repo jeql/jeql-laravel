@@ -5,7 +5,7 @@ namespace Jeql;
 use Jeql\Http\Controllers\BatchController;
 use Jeql\Http\Controllers\IntrospectController;
 use Jeql\Http\Controllers\OperationsController;
-use Illuminate\Routing\Router;
+use Laravel\Lumen\Routing\Router;
 
 class Jeql
 {

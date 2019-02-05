@@ -3,10 +3,7 @@
   "description": "JEQL Laravel package",
   "keywords": [],
   "require": {
-    "illuminate/contracts": "5.7.*",
-    "illuminate/http": "5.7.*",
-    "illuminate/support": "5.7.*",
-    "illuminate/validation": "5.7.*"
+    "laravel/lumen-framework": "5.7.*",
   },
   "require-dev": {},
   "autoload": {
