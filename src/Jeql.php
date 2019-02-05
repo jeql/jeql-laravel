@@ -19,7 +19,7 @@ class Jeql
      */
     public static function routes(Router $router)
     {
-        $router->group(['namespace' => null], function ($router) {
+        $router->group(['namespace' => '\\'], function ($router) {
             // Route to handle batch calls
             $router->post('_batch', BatchController::class . '@handle');
 
@@ -38,10 +38,6 @@ class Jeql
      */
     public static function loadOperationsFrom(string $path)
     {
-        if (!file_exists($path)) {
-            throw new \Exception("Could not find operations for path: {$path}");
-        }
-
         static::$operationsPath = $path;
     }
 

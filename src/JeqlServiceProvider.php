@@ -26,7 +26,13 @@ class JeqlServiceProvider extends ServiceProvider
         // Register OperationRegistry
         $this->app->singleton(OperationRegistry::class);
         $this->app->resolving(OperationRegistry::class, function (OperationRegistry $operations) {
-            require_once(Jeql::getOperationsPath());
+            $path = Jeql::getOperationsPath();
+
+            if (!file_exists($path)) {
+                throw new \Exception("Could not find operations for path: {$path}");
+            }
+
+            require_once($path);
         });
     }
 
