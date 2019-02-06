@@ -19,9 +19,9 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     protected $outputDefinitions;
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return mixed
      */
-    abstract protected function resolve(Request $request): \Illuminate\Http\JsonResponse;
+    abstract protected function resolve(Request $request);
 
     /**
      * Handle operation request

@@ -2,7 +2,7 @@
 
 namespace Jeql\Bags;
 
-use Illuminate\Support\Contracts\Arrayable;
+use Illuminate\Contracts\Support\Arrayable;
 
 abstract class Bag implements Arrayable
 {

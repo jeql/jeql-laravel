@@ -75,7 +75,7 @@ class Request implements HasArguments, HasFieldRequests
      */
     public function getArgument(string $key)
     {
-        return $this->argumentBag()->get($key);
+        return $this->getArguments()->get($key);
     }
 
     /**
@@ -89,7 +89,7 @@ class Request implements HasArguments, HasFieldRequests
     /**
      * @param string $key
      *
-     * @return RequestedField|mixed|null
+     * @return mixed
      */
     public function getField(string $key)
     {

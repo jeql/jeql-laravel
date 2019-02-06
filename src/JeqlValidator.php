@@ -93,7 +93,7 @@ class JeqlValidator
 
             /** @var RequestBag $fields */
             if ($subFields->isNotEmpty()) {
-                $subFieldDefinition = $definedOuput->getOutput($name);
+                $subFieldDefinition = $definedOuput->get($name);
 
                 if (!$subFieldDefinition instanceof OutputDefinition) {
                     throw new \Exception("Invalid output definition for {$name}, expecting array");
