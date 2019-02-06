@@ -4,6 +4,7 @@ namespace Jeql;
 
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\Integer;
+use Jeql\ScalarTypes\String;
 
 class TypeRegistry
 {

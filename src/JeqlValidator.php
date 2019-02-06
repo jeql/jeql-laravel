@@ -54,7 +54,7 @@ class JeqlValidator
             }
 
             if ($input instanceof ScalarType) {
-                $input->validate($value);
+                $input->validate($key, $value);
 
                 // Store rules in variable when present
                 if (!$rules = $input->getRules()) {
