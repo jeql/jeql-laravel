@@ -2,7 +2,7 @@
 
 namespace Jeql\ScalarTypes;
 
-class Integer extends ScalarType
+class IntegerType extends ScalarType
 {
     /**
      * Determine if the validation rule passes.

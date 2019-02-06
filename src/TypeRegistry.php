@@ -3,8 +3,8 @@
 namespace Jeql;
 
 use Jeql\Contracts\ScalarType;
-use Jeql\ScalarTypes\Integer;
-use Jeql\ScalarTypes\String;
+use Jeql\ScalarTypes\IntegerType;
+use Jeql\ScalarTypes\StringType;
 
 class TypeRegistry
 {
@@ -23,7 +23,7 @@ class TypeRegistry
      */
     public function integer(): ScalarType
     {
-        return new Integer;
+        return new IntegerType;
     }
 
     /**
@@ -31,6 +31,6 @@ class TypeRegistry
      */
     public function string(): ScalarType
     {
-        return new String;
+        return new StringType;
     }
 }
