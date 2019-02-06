@@ -37,6 +37,8 @@ class JeqlValidator
      */
     protected function validateArguments(DefinitionBag $definedInput, ArgumentBag $givenArguments)
     {
+        // @todo add check on extra given arguments which are not defined
+
         $rules = [];
 
         // Validate argument syntax

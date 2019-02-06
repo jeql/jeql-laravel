@@ -21,16 +21,20 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    abstract protected function resolve(): \Illuminate\Http\JsonResponse;
+    abstract protected function resolve(Request $request): \Illuminate\Http\JsonResponse;
 
     /**
      * Handle operation request
      *
+     * @param Request $request
+     *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function handle(): \Illuminate\Http\JsonResponse
+    public function handle(Request $request): \Illuminate\Http\JsonResponse
     {
-        return $this->resolve();
+        $data = $this->resolve($request);
+
+        return response()->json($data);
     }
 
     /**

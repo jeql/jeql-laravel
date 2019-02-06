@@ -2,7 +2,9 @@
 
 namespace Jeql\Bags;
 
-abstract class Bag
+use Illuminate\Support\Contracts\Arrayable;
+
+abstract class Bag implements Arrayable
 {
     /** @var array  */
     protected $bag = [];
@@ -43,6 +45,8 @@ abstract class Bag
      */
     public function get(string $key, $default = null)
     {
+        // @todo add dot notation handling, example key 'credentials.email'
+
         return $this->bag[$key] ?? $default;
     }
 
@@ -52,5 +56,13 @@ abstract class Bag
     public function isNotEmpty(): bool
     {
         return count($this->bag) > 0;
+    }
+
+    /**
+     * @return array
+     */
+    public function toArray(): array
+    {
+        return $this->all();
     }
 }
