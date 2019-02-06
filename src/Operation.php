@@ -19,6 +19,8 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     protected $outputDefinitions;
 
     /**
+     * @param Request $request
+     *
      * @return mixed
      */
     abstract protected function resolve(Request $request);
