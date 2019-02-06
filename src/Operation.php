@@ -2,15 +2,18 @@
 
 namespace Jeql;
 
+use Jeql\Bags\DefinitionBag;
 use Jeql\Bags\OutputBag;
 use Jeql\Contracts\Definition;
-use Jeql\Contracts\HasOutput;
+use Jeql\Contracts\HasInputDefinitions;
+use Jeql\Contracts\HasOutputDefinitions;
 use \Jeql\Contracts\Operation as OperationContract;
+use Jeql\Contracts\ScalarType;
 
-abstract class Operation extends InputDefinition implements Definition, OperationContract, HasOutput
+abstract class Operation implements Definition, OperationContract, HasInputDefinitions, HasOutputDefinitions
 {
-    /** @var null|OutputBag */
-    protected $outputCollection;
+    /** @var null|DefinitionBag */
+    protected $inputDefinitions;
 
     /**
      * @return \Illuminate\Http\JsonResponse
@@ -24,56 +27,67 @@ abstract class Operation extends InputDefinition implements Definition, Operatio
      */
     public function handle(): \Illuminate\Http\JsonResponse
     {
-        $this->validateRequest();
-
         return $this->resolve();
-    }
-
-    /**
-     * Validate the request based on operation definitions
-     *
-     * @return void
-     * @throws \Exception
-     */
-    protected function validateRequest()
-    {
-        return;
     }
 
     /**
      * @param string $key
      *
-     * @return ScalarType|OutputDefinition|null
+     * @return ScalarType|InputDefinition|null
      */
-    public function getField(string $key)
+    public function getInput(string $key)
     {
-        return $this->getFields()->get($key);
+        $expectedValues = $this->expects();
+
+        return $expectedValues[$key] ?? null;
     }
 
     /**
-     * @return OutputBag
+     * @return DefinitionBag
      */
-    public function getFields(): OutputBag
+    public function getInputDefinitions(): DefinitionBag
     {
-        if (!$this->outputCollection) {
-            $this->outputCollection = new OutputBag($this->fields());
+        if (!$this->inputDefinitions) {
+            $this->inputDefinitions = new DefinitionBag($this->expects());
         }
 
-        return $this->outputCollection;
+        return $this->inputDefinitions;
     }
 
     /**
-     * Overwrite to define the operation's arguments
+     * @param string $key
+     *
+     * @return ScalarType|OutputDefinition|mixed|null
+     */
+    public function getOutput(string $key)
+    {
+        return $this->getOutputDefinitions()->get($key);
+    }
+
+    /**
+     * @return DefinitionBag
+     */
+    public function getOutputDefinitions(): DefinitionBag
+    {
+        if (!$this->outputDefinitions) {
+            $this->outputDefinitions = new DefinitionBag($this->outputs());
+        }
+
+        return $this->outputDefinitions;
+    }
+
+    /**
+     * Overwrite to define the operation's expected arguments
      *
      * @return array
      */
-    public function arguments(): array
+    public function expects(): array
     {
         return [];
     }
 
     /**
-     * Overwrite to define the operation's output
+     * Overwrite to define the operation' output
      *
      * @return array
      */

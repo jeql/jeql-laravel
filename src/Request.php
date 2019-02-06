@@ -2,33 +2,68 @@
 
 namespace Jeql;
 
-use Illuminate\Http\Request as HttpRequest;
 use Jeql\Bags\ArgumentBag;
-use Jeql\Bags\RequestedFieldBag;
+use Jeql\Bags\RequestBag;
+use Jeql\Contracts\HasArguments;
+use Jeql\Contracts\HasFieldRequests;
 
-class Request extends Context
+class Request implements HasArguments, HasFieldRequests
 {
+    /** @var string */
+    protected $name;
+
     /** @var ArgumentBag */
     protected $argumentBag;
 
-    /** @var RequestedFieldBag  */
+    /** @var RequestBag */
     protected $requestedFieldBag;
 
     /**
      * Request constructor.
      *
-     * @param HttpRequest $request
+     * @param string $name
+     * @param array $arguments
+     * @param array $fields
      */
-    public function __construct(HttpRequest $request)
+    public function __construct(string $name, array $arguments = [], array $fields = [])
     {
-        $arguments = $request->json('arguments');
-        $fields = $request->json('fields');
-
+        $this->name = $name;
         $this->argumentBag = new ArgumentBag($arguments);
-        $this->fieldBag = new RequestedFieldBag($fields);
+        $this->fieldBag = new RequestBag($fields);
     }
 
-    public function getArguments()
+    /**
+     * @param array $field
+     *
+     * @return static
+     * @throws \Exception
+     */
+    public static function createFromArray(array $field)
+    {
+        $name = $field['name'] ?? null;
+
+        if (!$name) {
+            throw new \Exception("Syntax error: Request Fields always need a name ('fieldname' or ['name' => 'fieldname']");
+        }
+
+        $fields = $field['fields'] ?? [];
+        $arguments = $field['arguments'] ?? [];
+
+        return new static($name, $fields, $arguments);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
+
+    /**
+     * @return ArgumentBag
+     */
+    public function getArguments(): ArgumentBag
     {
         return $this->argumentBag;
     }
@@ -44,9 +79,9 @@ class Request extends Context
     }
 
     /**
-     * @return RequestedFieldBag
+     * @return RequestBag
      */
-    public function getFields(): RequestedFieldBag
+    public function getFields(): RequestBag
     {
         return $this->requestedFieldBag;
     }

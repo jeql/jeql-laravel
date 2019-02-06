@@ -2,40 +2,41 @@
 
 namespace Jeql;
 
-use Jeql\Bags\ArgumentBag;
+use Jeql\Bags\DefinitionBag;
 use Jeql\Contracts\Argument;
 use Jeql\Contracts\Definition;
-use Jeql\Contracts\HasArguments;
+use Jeql\Contracts\HasInputDefinitions;
+use Jeql\Contracts\ScalarType;
 
-abstract class InputDefinition implements Definition, HasArguments
+abstract class InputDefinition implements Definition, HasInputDefinitions
 {
-    /** @var null|ArgumentCollection */
-    protected $argumentCollection;
+    /** @var null|DefinitionBag */
+    protected $inputDefinitions;
 
     /**
      * @return array
      */
-    abstract protected function arguments(): array;
+    abstract protected function expects(): array;
 
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return ScalarType|InputDefinition|null
      */
-    public function getArgument(string $key)
+    public function getInput(string $key)
     {
-        return $this->getArguments()->get($key);
+        return $this->getInputDefinitions()->get($key);
     }
 
     /**
-     * @return ArgumentBag
+     * @return DefinitionBag
      */
-    public function getArguments(): ArgumentBag
+    public function getInputDefinitions(): DefinitionBag
     {
-        if (!$this->argumentCollection) {
-            $this->argumentCollection = new ArgumentBag($this->arguments());
+        if (!$this->inputDefinitions) {
+            $this->inputDefinitions = new DefinitionBag($this->expects());
         }
 
-        return $this->argumentCollection;
+        return $this->inputDefinitions;
     }
 }

@@ -2,20 +2,20 @@
 
 namespace Jeql\Contracts;
 
-use Jeql\Bags\RequestedFieldBag;
-use Jeql\RequestedField;
+use Jeql\Bags\RequestBag;
+use Jeql\Request;
 
-interface HasRequestedFields
+interface HasFieldRequests
 {
     /**
-     * @return RequestedFieldBag
+     * @return RequestBag
      */
     public function getFields();
 
     /**
      * @param string $key
      *
-     * @return RequestedField|null
+     * @return Request|null
      */
     public function getField(string $key);
 }

@@ -2,6 +2,9 @@
 
 namespace Jeql\Contracts;
 
+use Jeql\InputDefinition;
+use Jeql\OutputDefinition;
+
 interface Operation
 {
     /**
@@ -12,12 +15,12 @@ interface Operation
     public function handle(): \Illuminate\Http\JsonResponse;
 
     /**
-     * @return array|InputContract
+     * @return array|InputDefinition
      */
-    public function arguments();
+    public function expects();
 
     /**
-     * @return array|OutputContract
+     * @return array|OutputDefinition
      */
     public function outputs();
 }

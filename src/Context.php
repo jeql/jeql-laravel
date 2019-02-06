@@ -3,9 +3,9 @@
 namespace Jeql;
 
 use Jeql\Contracts\HasArguments;
-use Jeql\Contracts\HasRequestedFields;
+use Jeql\Contracts\HasFieldRequests;
 
-abstract class Context implements HasArguments, HasRequestedFields
+abstract class Context
 {
 
 }

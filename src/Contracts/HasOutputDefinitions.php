@@ -2,20 +2,20 @@
 
 namespace Jeql\Contracts;
 
-use Jeql\Bags\OutputBag;
+use Jeql\Bags\DefinitionBag;
 use Jeql\OutputDefinition;
 
-interface HasOutput
+interface HasOutputDefinitions
 {
     /**
-     * @return OutputBag
+     * @return DefinitionBag
      */
-    public function getFields();
+    public function getOutputDefinitions();
 
     /**
      * @param string $key
      *
      * @return ScalarType|OutputDefinition|null
      */
-    public function getField(string $key);
+    public function getOutput(string $key);
 }

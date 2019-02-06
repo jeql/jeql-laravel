@@ -2,71 +2,73 @@
 
 namespace Jeql;
 
+use Jeql\Bags\DefinitionBag;
 use Jeql\Contracts\Argument;
 use Jeql\Contracts\Definition;
 use Jeql\Contracts\Field;
-use Jeql\Contracts\HasArguments;
-use Jeql\Contracts\HasOutput;
+use Jeql\Contracts\HasInputDefinitions;
+use Jeql\Contracts\HasOutputDefinitions;
+use Jeql\Contracts\ScalarType;
 
-abstract class OutputDefinition implements Definition, HasArguments, HasOutput
+abstract class OutputDefinition implements Definition, HasInputDefinitions, HasOutputDefinitions
 {
-    /** @var null|ArgumentCollection */
-    protected $argumentCollection;
+    /** @var null|DefinitionBag */
+    protected $inputDefinitions;
 
-    /** @var null|FieldCollection */
-    protected $fieldCollection;
-
-    /**
-     * @return array
-     */
-    abstract protected function arguments(): array;
+    /** @var null|DefinitionBag */
+    protected $outputDefinitions;
 
     /**
      * @return array
      */
-    abstract protected function fields(): array;
+    abstract protected function expects(): array;
+
+    /**
+     * @return array
+     */
+    abstract protected function outputs(): array;
 
     /**
      * @param string $key
      *
-     * @return mixed
+     * @return ScalarType|InputDefinition|null
      */
-    public function getArgument(string $key)
+    public function getInput(string $key)
     {
-        return $this->getArguments()->get($key);
+        return $this->getInputDefinitions()->get($key);
     }
 
     /**
-     * @return ArgumentBag
+     * @return DefinitionBag
      */
-    public function getArguments(): ArgumentBag
+    public function getInputDefinitions(): DefinitionBag
     {
-        if (!$this->argumentCollection) {
-            $this->argumentCollection = new ArgumentBag($this->arguments());
+        if (!$this->inputDefinitions) {
+            $this->inputDefinitions = new DefinitionBag($this->expects());
         }
 
-        return $this->argumentCollection;
+        return $this->inputDefinitions;
     }
 
     /**
      * @param string $key
      *
-     * @return Field|null
+     * @return ScalarType|OutputDefinition|mixed|null
      */
-    public function getField(string $key): ?Field
+    public function getOutput(string $key)
     {
-        return $this->getFields()->get($key);
+        return $this->getOutputDefinitions()->get($key);
     }
 
     /**
-     * @return FieldCollection
+     * @return DefinitionBag
      */
-    public function getFields(): FieldCollection
+    public function getOutputDefinitions(): DefinitionBag
     {
-        if (!$this->fieldCollection) {
-            $this->fieldCollection = new FieldCollection($this->fields());
+        if (!$this->outputDefinitions) {
+            $this->outputDefinitions = new DefinitionBag($this->outputs());
         }
 
-        return $this->fieldCollection;
+        return $this->outputDefinitions;
     }
 }

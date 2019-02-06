@@ -3,11 +3,12 @@
 namespace Jeql;
 
 use Jeql\Bags\ArgumentBag;
+use Jeql\Bags\DefinitionBag;
 use Jeql\Bags\OutputBag;
-use Jeql\Bags\RequestedFieldBag;
+use Jeql\Bags\RequestBag;
 use Jeql\Contracts\Definition;
-use Jeql\Contracts\HasArguments;
-use Jeql\Contracts\HasOutput;
+use Jeql\Contracts\HasInputDefinitions;
+use Jeql\Contracts\HasOutputDefinitions;
 use Jeql\Contracts\ScalarType;
 use Illuminate\Validation\Validator;
 
@@ -15,48 +16,48 @@ class JeqlValidator
 {
     /**
      * @param Definition $definition
-     * @param Context $context
+     * @param Request $request
      */
-    public function validate(Definition $definition, Context $context) // def = Operation, con = Request
+    public function validate(Definition $definition, Request $request)
     {
-        if ($definition instanceof HasArguments) {
-            $this->validateArguments($definition->getArguments(), $context->getArguments());
+        if ($definition instanceof HasInputDefinitions) {
+            $this->validateArguments($definition->getInputDefinitions(), $request->getArguments());
         }
 
-        if ($definition instanceof HasOutput) {
-            $this->validateFields($definition->getFields(), $context->getFields());
+        if ($definition instanceof HasOutputDefinitions) {
+            $this->validateFields($definition->getOutputDefinitions(), $request->getFields());
         }
     }
 
     /**
-     * @param ArgumentBag $definedArguments
+     * @param DefinitionBag $definedInput
      * @param ArgumentBag $givenArguments
      *
      * @throws \Exception
      */
-    protected function validateArguments(ArgumentBag $definedArguments, ArgumentBag $givenArguments)
+    protected function validateArguments(DefinitionBag $definedInput, ArgumentBag $givenArguments)
     {
         $rules = [];
 
         // Validate argument syntax
-        foreach ($definedArguments as $key => $argument) {
+        foreach ($definedInput as $key => $input) {
             $value = $givenArguments->get($key);
 
-            if ($argument instanceof InputDefinition) {
+            if ($input instanceof InputDefinition) {
                 if (!$value instanceof ArgumentBag) {
                     throw new \Exception("Invalid argument for {$key}, expecting array");
                 }
 
-                $this->validateArguments($argument->getFields(), $value);
+                $this->validateArguments($input->getInputDefinitions(), $value);
 
                 continue;
             }
 
-            if ($argument instanceof ScalarType) {
-                $argument->validate($value);
+            if ($input instanceof ScalarType) {
+                $input->validate($value);
 
                 // Store rules in variable when present
-                if (!$rules = $argument->getRules()) {
+                if (!$rules = $input->getRules()) {
                     $rules[$key] = $rules;
                 }
 
@@ -76,28 +77,29 @@ class JeqlValidator
     }
 
     /**
-     * @param OutputBag $definedFields
-     * @param RequestedFieldBag $requestFields
+     * @param DefinitionBag $definedOuput
+     * @param RequestBag $requestFields
      *
      * @throws \Exception
      */
-    protected function validateFields(OutputBag $definedFields, RequestedFieldBag $requestFields)
+    protected function validateFields(DefinitionBag $definedOuput, RequestBag $requestFields)
     {
+        /** @var Request $requestedField */
         foreach ($requestFields as $requestedField) {
             $name = $requestedField->getName();
 
-            /** @var RequestedFieldBag $fields */
+            /** @var RequestBag $fields */
             if ($fields = $requestedField->getFields()) {
-                $subFieldDefinition = $definedFields->getField($name);
+                $subFieldDefinition = $definedOuput->getOutput($name);
 
-                if (!$subFieldDefinition instanceof InputDefinition) {
+                if (!$subFieldDefinition instanceof OutputDefinition) {
                     throw new \Exception("Invalid output definition for {$name}, expecting array");
                 }
 
                 $this->validate($subFieldDefinition, $requestedField);
             }
 
-            if (!$definedFields->has($name)) {
+            if (!$definedOuput->has($name)) {
                 throw new \Exception("Syntax error: requested field {$name} does not exists");
             }
         }
