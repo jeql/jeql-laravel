@@ -17,7 +17,7 @@ class RequestBag extends Bag
 
         foreach ($fields as $field) {
             if (!is_array($field)) {
-                $requestedFields[$field] = new Request($field);
+                $requests[$field] = new Request($field);
                 continue;
             }
 

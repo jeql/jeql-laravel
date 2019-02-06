@@ -29,7 +29,7 @@ class Request implements HasArguments, HasFieldRequests
     {
         $this->name = $name;
         $this->argumentBag = new ArgumentBag($arguments);
-        $this->fieldBag = new RequestBag($fields);
+        $this->requestedFieldBag = new RequestBag($fields);
     }
 
     /**
@@ -46,10 +46,10 @@ class Request implements HasArguments, HasFieldRequests
             throw new \Exception("Syntax error: Request Fields always need a name ('fieldname' or ['name' => 'fieldname']");
         }
 
-        $fields = $field['fields'] ?? [];
         $arguments = $field['arguments'] ?? [];
+        $fields = $field['fields'] ?? [];
 
-        return new static($name, $fields, $arguments);
+        return new static($name, $arguments, $fields);
     }
 
     /**

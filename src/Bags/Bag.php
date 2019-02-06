@@ -27,6 +27,16 @@ abstract class Bag
 
     /**
      * @param string $key
+     *
+     * @return bool
+     */
+    public function has(string $key): bool
+    {
+        return array_key_exists($key, $this->bag);
+    }
+
+    /**
+     * @param string $key
      * @param mixed $default
      *
      * @return mixed
@@ -34,5 +44,13 @@ abstract class Bag
     public function get(string $key, $default = null)
     {
         return $this->bag[$key] ?? $default;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isNotEmpty(): bool
+    {
+        return count($this->bag) > 0;
     }
 }

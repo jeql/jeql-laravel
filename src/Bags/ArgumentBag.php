@@ -12,9 +12,7 @@ class ArgumentBag extends Bag
     public function __construct(array $arguments)
     {
         $formattedArguments = array_map(function ($argument) {
-            if (is_array($argument)) {
-                return new ArgumentBag($argument);
-            }
+            return is_array($argument) ? new ArgumentBag($argument) : $argument;
         }, $arguments);
 
         parent::__construct($formattedArguments);

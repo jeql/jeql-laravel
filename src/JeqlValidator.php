@@ -40,7 +40,7 @@ class JeqlValidator
         $rules = [];
 
         // Validate argument syntax
-        foreach ($definedInput as $key => $input) {
+        foreach ($definedInput->all() as $key => $input) {
             $value = $givenArguments->get($key);
 
             if ($input instanceof InputDefinition) {
@@ -85,11 +85,12 @@ class JeqlValidator
     protected function validateFields(DefinitionBag $definedOuput, RequestBag $requestFields)
     {
         /** @var Request $requestedField */
-        foreach ($requestFields as $requestedField) {
+        foreach ($requestFields->all() as $requestedField) {
             $name = $requestedField->getName();
+            $subFields = $requestedField->getFields();
 
             /** @var RequestBag $fields */
-            if ($fields = $requestedField->getFields()) {
+            if ($subFields->isNotEmpty()) {
                 $subFieldDefinition = $definedOuput->getOutput($name);
 
                 if (!$subFieldDefinition instanceof OutputDefinition) {
