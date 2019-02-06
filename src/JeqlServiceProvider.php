@@ -16,11 +16,7 @@ class JeqlServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind('jeql.type', function () {
-            return new Type;
-        });
-
-        $this->app->resolving(Request::class, function (Request $request) {
-            $request->validate();
+            return new TypeRegistry;
         });
 
         // Register OperationRegistry

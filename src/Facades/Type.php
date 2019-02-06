@@ -5,7 +5,7 @@ namespace Jeql\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @mixin \Jeql\Type
+ * @mixin \Jeql\TypeRegistry
  */
 class Type extends Facade
 {

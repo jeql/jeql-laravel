@@ -2,7 +2,9 @@
 
 namespace Jeql\ScalarTypes;
 
-abstract class ScalarType
+use \Jeql\Contracts\ScalarType as ScalarTypeContract;
+
+abstract class ScalarType implements ScalarTypeContract
 {
     /** @var array */
     protected $rules = [];
@@ -10,30 +12,37 @@ abstract class ScalarType
     /** @var bool */
     protected $optional = false;
 
-    /** @var string */
-    protected $message = 'The value %s is not confirm the defined type';
-
     /**
-     * @param $value
+     * @param mixed $value
      *
      * @return bool
      */
     abstract protected function isValid($value): bool;
 
     /**
+     * @param string $attribute
      * @param $value
      *
+     * @return void
      * @throws \Exception
      */
-    public function validate($value)
+    public function validate(string $attribute, $value)
     {
         if ($this->optional && $value === null) {
             return;
         }
 
         if (!$this->isValid($value)) {
-            throw new \Exception(sprintf($this->message,$value));
+            throw new \Exception(str_replace(':attribute', $attribute, $this->message()));
         }
+    }
+
+    /**
+     * @return string
+     */
+    protected function message(): string
+    {
+        return ':attribute is invalid';
     }
 
     /**

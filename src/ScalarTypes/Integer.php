@@ -1,20 +1,17 @@
 <?php
 
-namespace Jeql\Rules;
+namespace Jeql\ScalarTypes;
 
-use Illuminate\Contracts\Validation\Rule;
-
-class Integer implements Rule
+class Integer extends ScalarType
 {
     /**
      * Determine if the validation rule passes.
      *
-     * @param string $attribute
      * @param mixed $value
      *
      * @return bool
      */
-    public function passes($attribute, $value): bool
+    public function isValid($value): bool
     {
         return is_int($value);
     }
@@ -26,6 +23,6 @@ class Integer implements Rule
      */
     public function message(): string
     {
-        return ':attribute must be an integer scalar type.';
+        return ':attribute must be an integer.';
     }
 }

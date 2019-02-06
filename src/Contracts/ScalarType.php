@@ -5,12 +5,12 @@ namespace Jeql\Contracts;
 interface ScalarType
 {
     /**
+     * @param string $attribute
      * @param mixed $value
      *
      * @return void
-     * @throws \Exception
      */
-    public function validate($value);
+    public function validate(string $attribute, $value);
 
     /**
      * @return array
