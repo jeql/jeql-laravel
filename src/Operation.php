@@ -15,6 +15,9 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     /** @var null|DefinitionBag */
     protected $inputDefinitions;
 
+    /** @var null|DefinitionBag */
+    protected $outputDefinitions;
+
     /**
      * @return \Illuminate\Http\JsonResponse
      */

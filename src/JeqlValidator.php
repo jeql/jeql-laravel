@@ -2,6 +2,7 @@
 
 namespace Jeql;
 
+use Illuminate\Support\Facades\Validator;
 use Jeql\Bags\ArgumentBag;
 use Jeql\Bags\DefinitionBag;
 use Jeql\Bags\OutputBag;
@@ -10,7 +11,6 @@ use Jeql\Contracts\Definition;
 use Jeql\Contracts\HasInputDefinitions;
 use Jeql\Contracts\HasOutputDefinitions;
 use Jeql\Contracts\ScalarType;
-use Illuminate\Validation\Validator;
 
 class JeqlValidator
 {
