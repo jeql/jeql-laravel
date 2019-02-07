@@ -11,6 +11,7 @@ use Jeql\Contracts\Definition;
 use Jeql\Contracts\HasInputDefinitions;
 use Jeql\Contracts\HasOutputDefinitions;
 use Jeql\Contracts\ScalarType;
+use Jeql\ScalarTypes\HasManyType;
 
 class JeqlValidator
 {
@@ -95,11 +96,11 @@ class JeqlValidator
             if ($subFields->isNotEmpty()) {
                 $subFieldDefinition = $definedOuput->get($name);
 
-                if (!$subFieldDefinition instanceof OutputDefinition) {
+                if (!$subFieldDefinition instanceof HasManyType) {
                     throw new \Exception("Invalid output definition for {$name}, expecting array");
                 }
 
-                $this->validate($subFieldDefinition, $requestedField);
+                $this->validate($subFieldDefinition->getDefinition(), $requestedField);
             }
 
             if (!$definedOuput->has($name)) {

@@ -26,8 +26,8 @@ class OperationsController
         // Create root request
         $request = new Request(
             'root',
-            $httpRequest->json('arguments'),
-            $httpRequest->json('fields')
+            $httpRequest->json('arguments', []),
+            $httpRequest->json('fields', [])
         );
 
         // Validate request

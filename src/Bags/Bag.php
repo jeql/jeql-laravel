@@ -45,9 +45,22 @@ abstract class Bag implements Arrayable
      */
     public function get(string $key, $default = null)
     {
-        // @todo add dot notation handling, example key 'credentials.email'
+        $context = $this->bag;
+        $value = null;
 
-        return $this->bag[$key] ?? $default;
+        foreach (explode('.', $key) as $segment) {
+            $value = $context[$segment] ?? null;
+
+            if ($value === null) {
+                break;
+            }
+
+            if ($value instanceof Arrayable) {
+                $context = $value->toArray();
+            }
+        }
+
+        return $value ?? $default;
     }
 
     /**

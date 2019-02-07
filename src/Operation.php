@@ -36,7 +36,60 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     {
         $data = $this->resolve($request);
 
-        return response()->json($data);
+        $response = $this->respond($request, $this, $data);
+
+        return response()->json($response);
+    }
+
+    /**
+     * @param Request $request
+     * @param $definition
+     * @param mixed $data
+     *
+     * @return array
+     */
+    public function respond(Request $request, Definition $definition, $data)
+    {
+        $output = [];
+        $requestedFields = $request->getFields();
+
+        /** @var Request $fieldRequest */
+        foreach ($requestedFields->all() as $fieldRequest) {
+            $fieldName = $fieldRequest->getName();
+            $fieldValue = $this->getFieldValue($data, $fieldName);
+            $fieldType = $definition->getOutput($fieldName);
+
+            if ($fieldType instanceof ScalarType) {
+                $fieldType->validate($fieldName, $fieldValue);
+            }
+
+            if ($fieldType instanceof HasManyType) {
+                foreach ($fieldValue as $index => $item) {
+                    $output[$fieldName][$index] = $this->respond($fieldRequest, $fieldType->getDefinition(), $item);
+                }
+
+                continue;
+            }
+
+            $output[$fieldName] = $fieldValue;
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $fieldName
+     *
+     * @return mixed
+     */
+    private function getFieldValue($data, $fieldName)
+    {
+        if ($fieldValue = data_get($data, $fieldName)) {
+            return $fieldValue;
+        }
+
+        return data_get($data, camel_case($fieldName));
     }
 
     /**

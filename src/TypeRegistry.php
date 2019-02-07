@@ -3,6 +3,7 @@
 namespace Jeql;
 
 use Jeql\Contracts\ScalarType;
+use Jeql\ScalarTypes\HasManyType;
 use Jeql\ScalarTypes\IntegerType;
 use Jeql\ScalarTypes\StringType;
 
@@ -32,5 +33,15 @@ class TypeRegistry
     public function string(): ScalarType
     {
         return new StringType;
+    }
+
+    /**
+     * @param OutputDefinition $definition
+     *
+     * @return ScalarType
+     */
+    public function hasMany(OutputDefinition $definition): ScalarType
+    {
+        return new HasManyType($definition);
     }
 }
