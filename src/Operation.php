@@ -9,6 +9,7 @@ use Jeql\Contracts\HasInputDefinitions;
 use Jeql\Contracts\HasOutputDefinitions;
 use \Jeql\Contracts\Operation as OperationContract;
 use Jeql\Contracts\ScalarType;
+use Jeql\ScalarTypes\HasManyType;
 
 abstract class Operation implements Definition, OperationContract, HasInputDefinitions, HasOutputDefinitions
 {
