@@ -32,4 +32,12 @@ class OperationRegistry
 
         return new $this->registered[$route];
     }
+
+    /**
+     * @return array
+     */
+    public function all(): array
+    {
+        return $this->registered;
+    }
 }
