@@ -60,14 +60,23 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
             $fieldValue = $this->getFieldValue($data, $fieldName);
             $fieldType = $definition->getOutput($fieldName);
 
+            // Validate field value when field type is instanceof ScalarType
             if ($fieldType instanceof ScalarType) {
                 $fieldType->validate($fieldName, $fieldValue);
             }
 
+            // Handle hasMany relation output recursively
             if ($fieldType instanceof HasManyType) {
                 foreach ($fieldValue as $index => $item) {
                     $output[$fieldName][$index] = $this->respond($fieldRequest, $fieldType->getDefinition(), $item);
                 }
+
+                continue;
+            }
+
+            // Handle definition output recursively
+            if ($fieldType instanceof Definition) {
+                $output[$fieldName] = $this->respond($fieldRequest, $fieldType, $fieldValue);
 
                 continue;
             }

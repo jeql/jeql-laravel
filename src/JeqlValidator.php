@@ -92,19 +92,25 @@ class JeqlValidator
             $name = $requestedField->getName();
             $subFields = $requestedField->getFields();
 
+            if (!$definedOuput->has($name)) {
+                throw new \Exception("Syntax error: requested field {$name} is not defined");
+            }
+
             /** @var RequestBag $fields */
             if ($subFields->isNotEmpty()) {
                 $subFieldDefinition = $definedOuput->get($name);
 
-                if (!$subFieldDefinition instanceof HasManyType) {
+                if ($subFieldDefinition instanceof HasManyType) {
+                    $this->validate($subFieldDefinition->getDefinition(), $requestedField);
+
+                    continue;
+                }
+
+                if (!$subFieldDefinition instanceof OutputDefinition) {
                     throw new \Exception("Invalid output definition for {$name}, expecting array");
                 }
 
-                $this->validate($subFieldDefinition->getDefinition(), $requestedField);
-            }
-
-            if (!$definedOuput->has($name)) {
-                throw new \Exception("Syntax error: requested field {$name} does not exists");
+                $this->validate($subFieldDefinition, $requestedField);
             }
         }
     }
