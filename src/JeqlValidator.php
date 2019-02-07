@@ -38,12 +38,14 @@ class JeqlValidator
      */
     protected function validateArguments(DefinitionBag $definedInput, ArgumentBag $givenArguments)
     {
-        // @todo add check on extra given arguments which are not defined
-
         $rules = [];
+        $validatedArguments = [];
 
         // Validate argument syntax
         foreach ($definedInput->all() as $key => $input) {
+            // Store are validated arguments
+            $validatedArguments[] = $key;
+
             $value = $givenArguments->get($key);
 
             if ($input instanceof InputDefinition) {
@@ -68,6 +70,13 @@ class JeqlValidator
             }
 
             throw new \Exception("Invalid input definition for {$key}");
+        }
+
+        // See if undefined arguments are given
+        foreach ($givenArguments->all() as $name => $value) {
+            if (!in_array($name, $validatedArguments)) {
+                throw new \Exception("{$name} is not defined as an argument");
+            }
         }
 
         // Validate input rules
