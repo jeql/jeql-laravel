@@ -63,6 +63,7 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
             // Validate field value when field type is instanceof ScalarType
             if ($fieldType instanceof ScalarType) {
                 $fieldType->validate($fieldName, $fieldValue);
+                $fieldValue = $fieldType->format($fieldValue, $fieldRequest->getArguments());
             }
 
             // Handle hasMany relation output recursively

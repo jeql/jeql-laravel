@@ -2,6 +2,8 @@
 
 namespace Jeql\ScalarTypes;
 
+use Jeql\Bags\ArgumentBag;
+
 class TimestampType extends ScalarType
 {
     /**
@@ -47,13 +49,13 @@ class TimestampType extends ScalarType
      * Format the given value for specified format
      *
      * @param mixed $value
-     * @param string|null $format
+     * @param ArgumentBag $arguments
      *
      * @return mixed
      */
-    public function format($value, $format = null)
+    public function format($value, ArgumentBag $arguments)
     {
-        $format = $format ?: $this->format;
+        $format = $arguments->get('format') ?: $this->format;
 
         return date($format, strtotime($value));
     }

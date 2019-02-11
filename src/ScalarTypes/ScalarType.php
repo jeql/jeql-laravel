@@ -2,6 +2,7 @@
 
 namespace Jeql\ScalarTypes;
 
+use Jeql\Bags\ArgumentBag;
 use \Jeql\Contracts\ScalarType as ScalarTypeContract;
 
 abstract class ScalarType implements ScalarTypeContract
@@ -47,13 +48,13 @@ abstract class ScalarType implements ScalarTypeContract
 
     /**
      * Format the given value for specified format
-     * 
+     *
      * @param mixed $value
-     * @param mixed $format
+     * @param ArgumentBag $arguments
      *
      * @return mixed
      */
-    public function format($value, $format = null)
+    public function format($value, ArgumentBag $arguments)
     {
         return $value;
     }
