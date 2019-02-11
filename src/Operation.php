@@ -120,9 +120,31 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
      */
     public function getInputDefinitions(): DefinitionBag
     {
-        if (!$this->inputDefinitions) {
-            $this->inputDefinitions = new DefinitionBag($this->expects());
+
+        if ($this->inputDefinitions) {
+            return $this->inputDefinitions;
         }
+
+        $inputDefinitions = $this->expects();
+
+        // Return definition bag from given output definition classname
+        if (is_string($inputDefinitions)) {
+            $inputDefinition = InputDefinition::instantiate($inputDefinitions);
+
+            $this->inputDefinitions = $inputDefinition->getInputDefinitions();
+
+            return $this->inputDefinitions;
+        }
+
+        // Return definition bag from given output definition
+        if ($inputDefinitions instanceof HasInputDefinitions) {
+            $this->inputDefinitions = $inputDefinitions->getInputDefinitions();
+
+            return $this->inputDefinitions;
+        }
+
+        // Return definition bag from given array
+        $this->inputDefinitions = new DefinitionBag((array)$inputDefinitions);
 
         return $this->inputDefinitions;
     }
@@ -142,9 +164,30 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
      */
     public function getOutputDefinitions(): DefinitionBag
     {
-        if (!$this->outputDefinitions) {
-            $this->outputDefinitions = new DefinitionBag($this->outputs());
+        if ($this->outputDefinitions) {
+            return $this->outputDefinitions;
         }
+
+        $outputDefinitions = $this->outputs();
+
+        // Return definition bag from given output definition classname
+        if (is_string($outputDefinitions)) {
+            $outputDefinition = OutputDefinition::instantiate($outputDefinitions);
+
+            $this->outputDefinitions = $outputDefinition->getOutputDefinitions();
+
+            return $this->outputDefinitions;
+        }
+
+        // Return definition bag from given output definition
+        if ($outputDefinitions instanceof HasOutputDefinitions) {
+            $this->outputDefinitions = $outputDefinitions->getOutputDefinitions();
+
+            return $this->outputDefinitions;
+        }
+
+        // Return definition bag from given array
+        $this->outputDefinitions = new DefinitionBag((array)$outputDefinitions);
 
         return $this->outputDefinitions;
     }

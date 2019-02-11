@@ -18,6 +18,9 @@ abstract class OutputDefinition implements Definition, HasInputDefinitions, HasO
     /** @var null|DefinitionBag */
     protected $outputDefinitions;
 
+    /** @var array */
+    protected static $__definitions = [];
+
     /**
      * @return array
      */
@@ -27,6 +30,32 @@ abstract class OutputDefinition implements Definition, HasInputDefinitions, HasO
      * @return array
      */
     abstract protected function outputs(): array;
+
+    /**
+     * @param string $classname
+     *
+     * @return Definition
+     * @throws \Exception
+     */
+    public static function instantiate(string $classname): Definition
+    {
+        // See if already instantiate once
+        if ($instance = static::$__definitions[$classname] ?? '') {
+            return $instance;
+        }
+
+        $instance = new $classname;
+
+        // Make sure instance is instance of Definition
+        if (!$instance instanceof Definition) {
+            throw new \Exception("{$classname} is not an instance of OutputDefinition");
+        }
+
+        // Store instance for reusability
+        static::$__definitions[$classname] = $instance;
+
+        return $instance;
+    }
 
     /**
      * @param string $key

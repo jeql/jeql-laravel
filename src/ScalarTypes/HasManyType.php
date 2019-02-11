@@ -2,6 +2,7 @@
 
 namespace Jeql\ScalarTypes;
 
+use Jeql\Contracts\Definition;
 use Jeql\OutputDefinition;
 
 class HasManyType extends ScalarType
@@ -10,19 +11,19 @@ class HasManyType extends ScalarType
     protected $definition;
 
     /**
-     * @param OutputDefinition $definition
+     * @param string $definition
      */
-    public function __construct(OutputDefinition $definition)
+    public function __construct(string $definition)
     {
         $this->definition = $definition;
     }
 
     /**
-     * @return OutputDefinition
+     * @return Definition
      */
-    public function getDefinition(): OutputDefinition
+    public function getDefinition(): Definition
     {
-        return $this->definition;
+        return OutputDefinition::instantiate($this->definition);
     }
 
     /**
