@@ -46,6 +46,19 @@ abstract class ScalarType implements ScalarTypeContract
     }
 
     /**
+     * Format the given value for specified format
+     * 
+     * @param mixed $value
+     * @param mixed $format
+     *
+     * @return mixed
+     */
+    public function format($value, $format = null)
+    {
+        return $value;
+    }
+
+    /**
      * @param array $rules
      *
      * @return $this
