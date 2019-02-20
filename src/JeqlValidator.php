@@ -11,6 +11,7 @@ use Jeql\Contracts\Definition;
 use Jeql\Contracts\HasInputDefinitions;
 use Jeql\Contracts\HasOutputDefinitions;
 use Jeql\Contracts\ScalarType;
+use Jeql\Exceptions\ValidationException;
 use Jeql\ScalarTypes\HasManyType;
 
 class JeqlValidator
@@ -83,8 +84,7 @@ class JeqlValidator
         $validator = Validator::make($givenArguments->all(), $rules);
 
         if ($validator->fails()) {
-            //throw new ValidationException($validator->getFields());
-            throw new \Exception('A validation exception occured');
+            throw new ValidationException($validator);
         }
     }
 

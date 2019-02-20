@@ -38,7 +38,9 @@ abstract class InputDefinition implements Definition, HasInputDefinitions
 
         // Make sure instance is instance of Definition
         if (!$instance instanceof Definition) {
-            throw new \Exception("{$classname} is not an instance of InputDefinition");
+            throw new \UnexpectedValueException(
+                sprintf('%s must be an instance of %s', $classname, Definition::class)
+            );
         }
 
         // Store instance for reusability
