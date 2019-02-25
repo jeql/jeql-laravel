@@ -5,6 +5,7 @@ namespace Jeql;
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\BooleanType;
 use Jeql\ScalarTypes\EnumType;
+use Jeql\ScalarTypes\FloatType;
 use Jeql\ScalarTypes\ListOfType;
 use Jeql\ScalarTypes\IntegerType;
 use Jeql\ScalarTypes\OfType;
@@ -29,6 +30,14 @@ class TypeRegistry
     public function integer(): ScalarType
     {
         return new IntegerType;
+    }
+
+    /**
+     * @return ScalarType
+     */
+    public function float(): ScalarType
+    {
+        return new FloatType;
     }
 
     /**
