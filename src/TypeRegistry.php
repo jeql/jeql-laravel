@@ -7,6 +7,7 @@ use Jeql\ScalarTypes\BooleanType;
 use Jeql\ScalarTypes\EnumType;
 use Jeql\ScalarTypes\ListOfType;
 use Jeql\ScalarTypes\IntegerType;
+use Jeql\ScalarTypes\OfType;
 use Jeql\ScalarTypes\StringType;
 use Jeql\ScalarTypes\TimestampType;
 
