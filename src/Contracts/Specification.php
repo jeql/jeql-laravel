@@ -2,6 +2,6 @@
 
 namespace Jeql\Contracts;
 
-interface Definition
+interface Specification
 {
 }

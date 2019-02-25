@@ -3,19 +3,19 @@
 namespace Jeql\Http\Controllers;
 
 use Illuminate\Http\Request as HttpRequest;
-use Jeql\Bags\DefinitionBag;
-use Jeql\Contracts\Definition;
+use Jeql\Bags\SpecificationBag;
+use Jeql\Contracts\Specification;
 use Jeql\Contracts\Operation;
-use Jeql\InputDefinition;
+use Jeql\InputSpecification;
 use Jeql\OperationRegistry;
-use Jeql\OutputDefinition;
+use Jeql\OutputSpecification;
 use Jeql\ScalarTypes\HasManyType;
 use Jeql\ScalarTypes\ScalarType;
 
 class IntrospectController
 {
-    protected $usedInputDefinitions = [];
-    protected $usedOutputDefinitions = [];
+    protected $usedInputSpecifications = [];
+    protected $usedOutputSpecifications = [];
 
     /**
      * @param HttpRequest $request
@@ -25,14 +25,14 @@ class IntrospectController
     public function handle(HttpRequest $request, OperationRegistry $operations): \Illuminate\Http\JsonResponse
     {
         $usedOperations = $this->getOperations($operations->all());
-        $usedOutputDefinitions = $this->getOutputDefinitions();
-        $usedInputDefinitions = $this->getInputDefinitions();
+        $usedOutputSpecifications = $this->getOutputSpecifications();
+        $usedInputSpecifications = $this->getInputSpecifications();
 
         return response()->json([
             'operations' => $usedOperations,
-            'definitions' => [
-                'input' => $usedInputDefinitions,
-                'output' => $usedOutputDefinitions,
+            'specifications' => [
+                'input' => $usedOutputSpecifications,
+                'output' => $usedInputSpecifications,
             ],
         ]);
     }
@@ -78,20 +78,20 @@ class IntrospectController
             'requires' => [
                 'authentication' => false,
             ],
-            'expects' => $this->getOperationExpectations($reflectionInstance->getInputDefinitions()),
-            'outputs' => $this->getOperationOutputs($reflectionInstance->getOutputDefinitions()),
+            'expects' => $this->getOperationExpectations($reflectionInstance->getInputSpecifications()),
+            'outputs' => $this->getOperationOutputs($reflectionInstance->getOutputSpecifications()),
         ];
 
         return $schema;
     }
 
     /**
-     * @param DefinitionBag $inputDefintions
+     * @param SpecificationBag $inputDefintions
      *
      * @return array
      * @throws \Exception
      */
-    protected function getOperationExpectations(DefinitionBag $inputDefintions): array
+    protected function getOperationExpectations(SpecificationBag $inputDefintions): array
     {
         $expectations = [];
 
@@ -106,44 +106,44 @@ class IntrospectController
                 continue;
             }
 
-            if ($expectation instanceof InputDefinition) {
+            if ($expectation instanceof InputSpecification) {
                 $expectations[] = [
                     'name' => $fieldName,
                     'type' => get_class($expectation),
                 ];
 
-                $this->addInputDefinition($expectation);
+                $this->addInputSpecification($expectation);
 
                 continue;
             }
 
-            throw new \Exception(gettype($expectation) . ' is not a valid InputDefinition');
+            throw new \Exception(gettype($expectation) . ' is not a valid InputSpecification');
         }
 
         return $expectations;
     }
 
     /**
-     * @param DefinitionBag $outputDefinitions
+     * @param SpecificationBag $outputSpecifications
      *
      * @return array
      * @throws \Exception
      */
-    protected function getOperationOutputs(DefinitionBag $outputDefinitions): array
+    protected function getOperationOutputs(SpecificationBag $outputSpecifications): array
     {
         $outputs = [];
 
-        foreach ($outputDefinitions->all() as $fieldName => $output) {
+        foreach ($outputSpecifications->all() as $fieldName => $output) {
             if ($output instanceof HasManyType) {
-                $subDefinition = $output->getDefinition();
+                $subSpecification = $output->getSpecification();
 
                 $outputs[] = [
                     'name' => $fieldName,
                     'type' => get_class($output),
-                    'definition' => get_class($subDefinition),
+                    'specification' => get_class($subSpecification),
                 ];
 
-                $this->addOutputDefinition($subDefinition);
+                $this->addOutputSpecification($subSpecification);
 
                 continue;
             }
@@ -158,18 +158,18 @@ class IntrospectController
                 continue;
             }
 
-            if ($output instanceof OutputDefinition) {
+            if ($output instanceof OutputSpecification) {
                 $outputs[] = [
                     'name' => $fieldName,
                     'type' => get_class($output),
                 ];
 
-                $this->addOutputDefinition($output);
+                $this->addOutputSpecification($output);
 
                 continue;
             }
 
-            throw new \Exception(gettype($output) . ' is not a valid OutputDefinition');
+            throw new \Exception(gettype($output) . ' is not a valid OutputSpecification');
         }
 
         return $outputs;
@@ -178,69 +178,69 @@ class IntrospectController
     /**
      * @return array
      */
-    protected function getOutputDefinitions(): array
+    protected function getOutputSpecifications(): array
     {
-        $outputDefinitions = [];
-        $outputDefinition = current($this->usedOutputDefinitions);
+        $outputSpecifications = [];
+        $outputSpecification = current($this->usedOutputSpecifications);
 
-        while ($outputDefinition) {
-            $outputDefinitions[] = [
-                'name' => get_class($outputDefinition),
-                'expects' => $this->getOperationExpectations($outputDefinition->getInputDefinitions()),
-                'outputs' => $this->getOperationOutputs($outputDefinition->getOutputDefinitions()),
+        while ($outputSpecification) {
+            $outputSpecifications[] = [
+                'name' => get_class($outputSpecification),
+                'expects' => $this->getOperationExpectations($outputSpecification->getInputSpecifications()),
+                'outputs' => $this->getOperationOutputs($outputSpecification->getOutputSpecifications()),
             ];
 
-            $outputDefinition = next($this->usedOutputDefinitions);
+            $outputSpecification = next($this->usedOutputSpecifications);
         }
 
-        return $outputDefinitions;
+        return $outputSpecifications;
     }
 
     /**
      * @return array
      */
-    protected function getInputDefinitions(): array
+    protected function getInputSpecifications(): array
     {
-        $inputDefinitions = [];
-        $inputDefinition = current($this->usedInputDefinitions);
+        $inputSpecifications = [];
+        $inputSpecification = current($this->usedInputSpecifications);
 
-        while ($inputDefinition) {
-            $inputDefinitions[] = [
-                'name' => get_class($inputDefinition),
-                'expects' => $this->getOperationExpectations($inputDefinition->getInputDefinitions()),
+        while ($inputSpecification) {
+            $inputSpecifications[] = [
+                'name' => get_class($inputSpecification),
+                'expects' => $this->getOperationExpectations($inputSpecification->getInputSpecifications()),
             ];
 
-            $inputDefinition = next($this->usedInputDefinitions);
+            $inputSpecification = next($this->usedInputSpecifications);
         }
 
-        return $inputDefinitions;
+        return $inputSpecifications;
     }
 
     /**
-     * @param Definition $inputDefinition
+     * @param Specification $inputSpecification
      *
      * @return void
      */
-    protected function addInputDefinition(Definition $inputDefinition)
+    protected function addInputSpecification(Specification $inputSpecification)
     {
-        $className = get_class($inputDefinition);
+        $className = get_class($inputSpecification);
 
-        if (!in_array($className, $this->usedInputDefinitions)) {
-            $this->usedInputDefinitions[$className] = $inputDefinition;
+        if (!in_array($className, $this->usedInputSpecifications)) {
+            $this->usedInputSpecifications[$className] = $inputSpecification;
         }
     }
 
     /**
-     * @param Definition $outputDefintiion
+     * @param Specification $outputSpecification
      *
      * @return void
      */
-    protected function addOutputDefinition(Definition $outputDefintiion)
+    protected function addOutputSpecification(Specification $outputSpecification)
     {
-        $className = get_class($outputDefintiion);
+        $className = get_class($outputSpecification);
 
-        if (!in_array($className, $this->usedOutputDefinitions)) {
-            $this->usedOutputDefinitions[$className] = $outputDefintiion;
+        if (!in_array($className, $this->usedOutputSpecifications)) {
+            $this->usedOutputSpecifications[$className] = $outputSpecification;
         }
     }
 }

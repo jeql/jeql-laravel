@@ -4,56 +4,56 @@ namespace Jeql;
 
 use Illuminate\Support\Facades\Validator;
 use Jeql\Bags\ArgumentBag;
-use Jeql\Bags\DefinitionBag;
+use Jeql\Bags\SpecificationBag;
 use Jeql\Bags\OutputBag;
 use Jeql\Bags\RequestBag;
-use Jeql\Contracts\Definition;
-use Jeql\Contracts\HasInputDefinitions;
-use Jeql\Contracts\HasOutputDefinitions;
+use Jeql\Contracts\Specification;
+use Jeql\Contracts\HasInputSpecifications;
+use Jeql\Contracts\HasOutputSpecifications;
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\HasManyType;
 
 class JeqlValidator
 {
     /**
-     * @param Definition $definition
+     * @param Specification $specification
      * @param Request $request
      */
-    public function validate(Definition $definition, Request $request)
+    public function validate(Specification $specification, Request $request)
     {
-        if ($definition instanceof HasInputDefinitions) {
-            $this->validateArguments($definition->getInputDefinitions(), $request->getArguments());
+        if ($specification instanceof HasInputSpecifications) {
+            $this->validateArguments($specification->getInputSpecifications(), $request->getArguments());
         }
 
-        if ($definition instanceof HasOutputDefinitions) {
-            $this->validateFields($definition->getOutputDefinitions(), $request->getFields());
+        if ($specification instanceof HasOutputSpecifications) {
+            $this->validateFields($specification->getOutputSpecifications(), $request->getFields());
         }
     }
 
     /**
-     * @param DefinitionBag $definedInput
+     * @param SpecificationBag $specifiedInput
      * @param ArgumentBag $givenArguments
      *
      * @throws \Exception
      */
-    protected function validateArguments(DefinitionBag $definedInput, ArgumentBag $givenArguments)
+    protected function validateArguments(SpecificationBag $specifiedInput, ArgumentBag $givenArguments)
     {
         $rules = [];
         $validatedArguments = [];
 
         // Validate argument syntax
-        foreach ($definedInput->all() as $key => $input) {
+        foreach ($specifiedInput->all() as $key => $input) {
             // Store are validated arguments
             $validatedArguments[] = $key;
 
             $value = $givenArguments->get($key);
 
-            if ($input instanceof InputDefinition) {
+            if ($input instanceof InputSpecification) {
                 if (!$value instanceof ArgumentBag) {
                     throw new \Exception("Invalid argument for {$key}, expecting array");
                 }
 
-                $this->validateArguments($input->getInputDefinitions(), $value);
+                $this->validateArguments($input->getInputSpecifications(), $value);
 
                 continue;
             }
@@ -69,7 +69,7 @@ class JeqlValidator
                 continue;
             }
 
-            throw new \Exception("Invalid input definition for {$key}");
+            throw new \Exception("Invalid input specification for {$key}");
         }
 
         // See if undefined arguments are given
@@ -89,37 +89,37 @@ class JeqlValidator
     }
 
     /**
-     * @param DefinitionBag $definedOuput
+     * @param SpecificationBag $specifiedOuput
      * @param RequestBag $requestFields
      *
      * @throws \Exception
      */
-    protected function validateFields(DefinitionBag $definedOuput, RequestBag $requestFields)
+    protected function validateFields(SpecificationBag $specifiedOuput, RequestBag $requestFields)
     {
         /** @var Request $requestedField */
         foreach ($requestFields->all() as $requestedField) {
             $name = $requestedField->getName();
             $subFields = $requestedField->getFields();
 
-            if (!$definedOuput->has($name)) {
+            if (!$specifiedOuput->has($name)) {
                 throw new \Exception("Syntax error: requested field {$name} is not defined");
             }
 
             /** @var RequestBag $fields */
             if ($subFields->isNotEmpty()) {
-                $subFieldDefinition = $definedOuput->get($name);
+                $subFieldSpecification = $specifiedOuput->get($name);
 
-                if ($subFieldDefinition instanceof HasManyType) {
-                    $this->validate($subFieldDefinition->getDefinition(), $requestedField);
+                if ($subFieldSpecification instanceof HasManyType) {
+                    $this->validate($subFieldSpecification->getSpecification(), $requestedField);
 
                     continue;
                 }
 
-                if (!$subFieldDefinition instanceof OutputDefinition) {
-                    throw new \Exception("Invalid output definition for {$name}, expecting array");
+                if (!$subFieldSpecification instanceof OutputSpecification) {
+                    throw new \Exception("Invalid output specification for {$name}, expecting array");
                 }
 
-                $this->validate($subFieldDefinition, $requestedField);
+                $this->validate($subFieldSpecification, $requestedField);
             }
         }
     }

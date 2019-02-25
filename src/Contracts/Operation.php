@@ -2,8 +2,8 @@
 
 namespace Jeql\Contracts;
 
-use Jeql\InputDefinition;
-use Jeql\OutputDefinition;
+use Jeql\InputSpecification;
+use Jeql\OutputSpecification;
 use Jeql\Request;
 
 interface Operation
@@ -18,12 +18,12 @@ interface Operation
     public function handle(Request $request): \Illuminate\Http\JsonResponse;
 
     /**
-     * @return array|InputDefinition
+     * @return array|InputSpecification
      */
     public function expects();
 
     /**
-     * @return array|OutputDefinition
+     * @return array|OutputSpecification
      */
     public function outputs();
 }

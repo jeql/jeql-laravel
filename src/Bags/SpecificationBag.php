@@ -2,10 +2,10 @@
 
 namespace Jeql\Bags;
 
-class DefinitionBag extends Bag
+class SpecificationBag extends Bag
 {
     /**
-     * DefinitionBag constructor.
+     * SpecificationBag constructor.
      *
      * @param array $items
      */

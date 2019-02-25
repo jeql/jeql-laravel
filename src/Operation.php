@@ -2,22 +2,22 @@
 
 namespace Jeql;
 
-use Jeql\Bags\DefinitionBag;
+use Jeql\Bags\SpecificationBag;
 use Jeql\Bags\OutputBag;
-use Jeql\Contracts\Definition;
-use Jeql\Contracts\HasInputDefinitions;
-use Jeql\Contracts\HasOutputDefinitions;
+use Jeql\Contracts\Specification;
+use Jeql\Contracts\HasInputSpecifications;
+use Jeql\Contracts\HasOutputSpecifications;
 use \Jeql\Contracts\Operation as OperationContract;
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\HasManyType;
 
-abstract class Operation implements Definition, OperationContract, HasInputDefinitions, HasOutputDefinitions
+abstract class Operation implements Specification, OperationContract, HasInputSpecifications, HasOutputSpecifications
 {
-    /** @var null|DefinitionBag */
-    protected $inputDefinitions;
+    /** @var null|SpecificationBag */
+    protected $inputSpecifications;
 
-    /** @var null|DefinitionBag */
-    protected $outputDefinitions;
+    /** @var null|SpecificationBag */
+    protected $outputSpecifications;
 
     /**
      * @param Request $request
@@ -44,12 +44,12 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
 
     /**
      * @param Request $request
-     * @param $definition
+     * @param Specification $specification
      * @param mixed $data
      *
      * @return array
      */
-    public function respond(Request $request, Definition $definition, $data)
+    public function respond(Request $request, Specification $specification, $data)
     {
         $output = [];
         $requestedFields = $request->getFields();
@@ -58,7 +58,7 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
         foreach ($requestedFields->all() as $fieldRequest) {
             $fieldName = $fieldRequest->getName();
             $fieldValue = $this->getFieldValue($data, $fieldName);
-            $fieldType = $definition->getOutput($fieldName);
+            $fieldType = $specification->getOutput($fieldName);
 
             // Validate field value when field type is instanceof ScalarType
             if ($fieldType instanceof ScalarType) {
@@ -69,14 +69,14 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
             // Handle hasMany relation output recursively
             if ($fieldType instanceof HasManyType) {
                 foreach ($fieldValue as $index => $item) {
-                    $output[$fieldName][$index] = $this->respond($fieldRequest, $fieldType->getDefinition(), $item);
+                    $output[$fieldName][$index] = $this->respond($fieldRequest, $fieldType->getSpecification(), $item);
                 }
 
                 continue;
             }
 
-            // Handle definition output recursively
-            if ($fieldType instanceof Definition) {
+            // Handle specification output recursively
+            if ($fieldType instanceof Specification) {
                 $output[$fieldName] = $this->respond($fieldRequest, $fieldType, $fieldValue);
 
                 continue;
@@ -106,7 +106,7 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     /**
      * @param string $key
      *
-     * @return ScalarType|InputDefinition|null
+     * @return ScalarType|InputSpecification|null
      */
     public function getInput(string $key)
     {
@@ -116,80 +116,80 @@ abstract class Operation implements Definition, OperationContract, HasInputDefin
     }
 
     /**
-     * @return DefinitionBag
+     * @return SpecificationBag
      */
-    public function getInputDefinitions(): DefinitionBag
+    public function getInputSpecifications(): SpecificationBag
     {
 
-        if ($this->inputDefinitions) {
-            return $this->inputDefinitions;
+        if ($this->inputSpecifications) {
+            return $this->inputSpecifications;
         }
 
-        $inputDefinitions = $this->expects();
+        $inputSpecifications = $this->expects();
 
-        // Return definition bag from given output definition classname
-        if (is_string($inputDefinitions)) {
-            $inputDefinition = InputDefinition::instantiate($inputDefinitions);
+        // Return specification bag from given output specification classname
+        if (is_string($inputSpecifications)) {
+            $inputSpecification = InputSpecification::instantiate($inputSpecifications);
 
-            $this->inputDefinitions = $inputDefinition->getInputDefinitions();
+            $this->inputSpecifications = $inputSpecification->getInputSpecifications();
 
-            return $this->inputDefinitions;
+            return $this->inputSpecifications;
         }
 
-        // Return definition bag from given output definition
-        if ($inputDefinitions instanceof HasInputDefinitions) {
-            $this->inputDefinitions = $inputDefinitions->getInputDefinitions();
+        // Return specification bag from given output specification
+        if ($inputSpecifications instanceof HasInputSpecifications) {
+            $this->inputSpecifications = $inputSpecifications->getInputSpecifications();
 
-            return $this->inputDefinitions;
+            return $this->inputSpecifications;
         }
 
-        // Return definition bag from given array
-        $this->inputDefinitions = new DefinitionBag((array)$inputDefinitions);
+        // Return specification bag from given array
+        $this->inputSpecifications = new SpecificationBag((array)$inputSpecifications);
 
-        return $this->inputDefinitions;
+        return $this->inputSpecifications;
     }
 
     /**
      * @param string $key
      *
-     * @return ScalarType|OutputDefinition|mixed|null
+     * @return ScalarType|OutputSpecification|mixed|null
      */
     public function getOutput(string $key)
     {
-        return $this->getOutputDefinitions()->get($key);
+        return $this->getOutputSpecifications()->get($key);
     }
 
     /**
-     * @return DefinitionBag
+     * @return SpecificationBag
      */
-    public function getOutputDefinitions(): DefinitionBag
+    public function getOutputSpecifications(): SpecificationBag
     {
-        if ($this->outputDefinitions) {
-            return $this->outputDefinitions;
+        if ($this->outputSpecifications) {
+            return $this->outputSpecifications;
         }
 
-        $outputDefinitions = $this->outputs();
+        $outputSpecifications = $this->outputs();
 
-        // Return definition bag from given output definition classname
-        if (is_string($outputDefinitions)) {
-            $outputDefinition = OutputDefinition::instantiate($outputDefinitions);
+        // Return specification bag from given output specification classname
+        if (is_string($outputSpecifications)) {
+            $outputSpecification = OutputSpecification::instantiate($outputSpecifications);
 
-            $this->outputDefinitions = $outputDefinition->getOutputDefinitions();
+            $this->outputSpecifications = $outputSpecification->getOutputSpecifications();
 
-            return $this->outputDefinitions;
+            return $this->outputSpecifications;
         }
 
-        // Return definition bag from given output definition
-        if ($outputDefinitions instanceof HasOutputDefinitions) {
-            $this->outputDefinitions = $outputDefinitions->getOutputDefinitions();
+        // Return specification bag from given output specification
+        if ($outputSpecifications instanceof HasOutputSpecifications) {
+            $this->outputSpecifications = $outputSpecifications->getOutputSpecifications();
 
-            return $this->outputDefinitions;
+            return $this->outputSpecifications;
         }
 
-        // Return definition bag from given array
-        $this->outputDefinitions = new DefinitionBag((array)$outputDefinitions);
+        // Return specification bag from given array
+        $this->outputSpecifications = new SpecificationBag((array)$outputSpecifications);
 
-        return $this->outputDefinitions;
+        return $this->outputSpecifications;
     }
 
     /**

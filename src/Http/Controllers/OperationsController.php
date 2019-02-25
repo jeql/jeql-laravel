@@ -3,7 +3,7 @@
 namespace Jeql\Http\Controllers;
 
 use Illuminate\Http\Request as HttpRequest;
-use Jeql\Contracts\Definition;
+use Jeql\Contracts\Specification;
 use Jeql\Contracts\Operation;
 use Jeql\JeqlValidator;
 use Jeql\OperationRegistry;
@@ -20,7 +20,7 @@ class OperationsController
      */
     public function handle(OperationRegistry $operations, HttpRequest $httpRequest, string $route): \Illuminate\Http\JsonResponse
     {
-        /** @var Definition|Operation $operation */
+        /** @var Specification|Operation $operation */
         $operation = $operations->match($route);
 
         // Create root request

@@ -77,12 +77,12 @@ class TypeRegistry
     }
 
     /**
-     * @param string $definition
+     * @param string $specification
      *
      * @return ScalarType
      */
-    public function hasMany(string $definition): ScalarType
+    public function hasMany(string $specification): ScalarType
     {
-        return new HasManyType($definition);
+        return new HasManyType($specification);
     }
 }
