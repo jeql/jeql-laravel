@@ -3,7 +3,6 @@
 namespace Jeql\Contracts;
 
 use Jeql\Bags\SpecificationBag;
-use Jeql\Bags\OutputBag;
 use Jeql\InputSpecification;
 
 interface HasInputSpecifications

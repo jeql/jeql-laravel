@@ -5,13 +5,13 @@ namespace Jeql;
 use Illuminate\Support\Facades\Validator;
 use Jeql\Bags\ArgumentBag;
 use Jeql\Bags\SpecificationBag;
-use Jeql\Bags\OutputBag;
 use Jeql\Bags\RequestBag;
 use Jeql\Contracts\Specification;
 use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\HasOutputSpecifications;
 use Jeql\Contracts\ScalarType;
-use Jeql\ScalarTypes\HasManyType;
+use Jeql\ScalarTypes\ListOfType;
+use Jeql\ScalarTypes\OfType;
 
 class JeqlValidator
 {
@@ -105,21 +105,16 @@ class JeqlValidator
                 throw new \Exception("Syntax error: requested field {$name} is not defined");
             }
 
-            /** @var RequestBag $fields */
             if ($subFields->isNotEmpty()) {
                 $subFieldSpecification = $specifiedOuput->get($name);
 
-                if ($subFieldSpecification instanceof HasManyType) {
+                if ($subFieldSpecification instanceof ListOfType || $subFieldSpecification instanceof OfType) {
                     $this->validate($subFieldSpecification->getSpecification(), $requestedField);
 
                     continue;
                 }
 
-                if (!$subFieldSpecification instanceof OutputSpecification) {
-                    throw new \Exception("Invalid output specification for {$name}, expecting array");
-                }
-
-                $this->validate($subFieldSpecification, $requestedField);
+                throw new \Exception("Invalid output specification for {$name}, expecting array");
             }
         }
     }

@@ -3,13 +3,13 @@
 namespace Jeql;
 
 use Jeql\Bags\SpecificationBag;
-use Jeql\Bags\OutputBag;
 use Jeql\Contracts\Specification;
 use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\HasOutputSpecifications;
 use \Jeql\Contracts\Operation as OperationContract;
 use Jeql\Contracts\ScalarType;
-use Jeql\ScalarTypes\HasManyType;
+use Jeql\ScalarTypes\ListOfType;
+use Jeql\ScalarTypes\OfType;
 
 abstract class Operation implements Specification, OperationContract, HasInputSpecifications, HasOutputSpecifications
 {
@@ -66,8 +66,8 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
                 $fieldValue = $fieldType->format($fieldValue, $fieldRequest->getArguments());
             }
 
-            // Handle hasMany relation output recursively
-            if ($fieldType instanceof HasManyType) {
+            // Handle ListOfType output recursively
+            if ($fieldType instanceof ListOfType) {
                 foreach ($fieldValue as $index => $item) {
                     $output[$fieldName][$index] = $this->respond($fieldRequest, $fieldType->getSpecification(), $item);
                 }
@@ -76,8 +76,8 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
             }
 
             // Handle specification output recursively
-            if ($fieldType instanceof Specification) {
-                $output[$fieldName] = $this->respond($fieldRequest, $fieldType, $fieldValue);
+            if ($fieldType instanceof OfType) {
+                $output[$fieldName] = $this->respond($fieldRequest, $fieldType->getSpecification(), $fieldValue);
 
                 continue;
             }

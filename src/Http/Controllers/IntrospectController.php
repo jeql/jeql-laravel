@@ -9,7 +9,8 @@ use Jeql\Contracts\Operation;
 use Jeql\InputSpecification;
 use Jeql\OperationRegistry;
 use Jeql\OutputSpecification;
-use Jeql\ScalarTypes\HasManyType;
+use Jeql\ScalarTypes\ListOfType;
+use Jeql\ScalarTypes\OfType;
 use Jeql\ScalarTypes\ScalarType;
 
 class IntrospectController
@@ -134,7 +135,7 @@ class IntrospectController
         $outputs = [];
 
         foreach ($outputSpecifications->all() as $fieldName => $output) {
-            if ($output instanceof HasManyType) {
+            if ($output instanceof ListOfType || $output instanceof OfType) {
                 $subSpecification = $output->getSpecification();
 
                 $outputs[] = [
@@ -154,17 +155,6 @@ class IntrospectController
                     'type' => get_class($output),
                     'example' => 'an example',
                 ];
-
-                continue;
-            }
-
-            if ($output instanceof OutputSpecification) {
-                $outputs[] = [
-                    'name' => $fieldName,
-                    'type' => get_class($output),
-                ];
-
-                $this->addOutputSpecification($output);
 
                 continue;
             }

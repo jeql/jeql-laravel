@@ -5,7 +5,7 @@ namespace Jeql;
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\BooleanType;
 use Jeql\ScalarTypes\EnumType;
-use Jeql\ScalarTypes\HasManyType;
+use Jeql\ScalarTypes\ListOfType;
 use Jeql\ScalarTypes\IntegerType;
 use Jeql\ScalarTypes\StringType;
 use Jeql\ScalarTypes\TimestampType;
@@ -81,8 +81,18 @@ class TypeRegistry
      *
      * @return ScalarType
      */
-    public function hasMany(string $specification): ScalarType
+    public function of(string $specification): ScalarType
     {
-        return new HasManyType($specification);
+        return new OfType($specification);
+    }
+
+    /**
+     * @param string $specification
+     *
+     * @return ScalarType
+     */
+    public function listOf(string $specification): ScalarType
+    {
+        return new ListOfType($specification);
     }
 }

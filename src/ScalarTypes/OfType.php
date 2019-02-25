@@ -5,7 +5,7 @@ namespace Jeql\ScalarTypes;
 use Jeql\Contracts\Specification;
 use Jeql\OutputSpecification;
 
-class HasManyType extends ScalarType
+class OfType extends ScalarType
 {
     /** @var OutputSpecification */
     protected $specification;
@@ -35,16 +35,6 @@ class HasManyType extends ScalarType
      */
     public function isValid($value): bool
     {
-        return is_array($value) || method_exists($value, 'toArray');
-    }
-
-    /**
-     * Get the validation error message.
-     *
-     * @return string|array
-     */
-    public function message(): string
-    {
-        return ':attribute must be a array or collection.';
+        return true;
     }
 }
