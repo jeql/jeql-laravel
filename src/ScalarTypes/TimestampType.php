@@ -59,7 +59,7 @@ class TimestampType extends ScalarType
         $format = $arguments->get('format') ?: $this->format;
 
         if ($value instanceof Carbon) {
-            return $value->format($format);    
+            return $value->format($format);
         }
 
         return date($format, strtotime($value));

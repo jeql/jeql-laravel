@@ -3,7 +3,6 @@
   "description": "JEQL Laravel package",
   "keywords": [],
   "require": {
-    "nesbot/carbon",
     "ext-json": "*",
     "laravel/lumen-framework": "5.7.*"
   },

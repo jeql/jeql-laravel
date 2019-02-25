@@ -3,28 +3,17 @@
 namespace Jeql;
 
 use Jeql\Bags\SpecificationBag;
-use Jeql\Contracts\Argument;
 use Jeql\Contracts\Specification;
-use Jeql\Contracts\Field;
-use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\HasOutputSpecifications;
 use Jeql\Contracts\ScalarType;
 
-abstract class OutputSpecification implements Specification, HasInputSpecifications, HasOutputSpecifications
+abstract class OutputSpecification implements Specification, HasOutputSpecifications
 {
-    /** @var null|SpecificationBag */
-    protected $inputSpecifications;
-
     /** @var null|SpecificationBag */
     protected $outputSpecifications;
 
     /** @var array */
     protected static $__specifications = [];
-
-    /**
-     * @return array
-     */
-    abstract protected function expects(): array;
 
     /**
      * @return array
@@ -55,28 +44,6 @@ abstract class OutputSpecification implements Specification, HasInputSpecificati
         static::$__specifications[$classname] = $instance;
 
         return $instance;
-    }
-
-    /**
-     * @param string $key
-     *
-     * @return ScalarType|InputSpecification|null
-     */
-    public function getInput(string $key)
-    {
-        return $this->getInputSpecifications()->get($key);
-    }
-
-    /**
-     * @return SpecificationBag
-     */
-    public function getInputSpecifications(): SpecificationBag
-    {
-        if (!$this->inputSpecifications) {
-            $this->inputSpecifications = new SpecificationBag($this->expects());
-        }
-
-        return $this->inputSpecifications;
     }
 
     /**
