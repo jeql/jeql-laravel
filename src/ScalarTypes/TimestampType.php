@@ -2,6 +2,7 @@
 
 namespace Jeql\ScalarTypes;
 
+use Carbon\Carbon;
 use Jeql\Bags\ArgumentBag;
 
 class TimestampType extends ScalarType
@@ -32,7 +33,7 @@ class TimestampType extends ScalarType
      */
     public function isValid($value): bool
     {
-        return strtotime($value);
+        return strtotime($value) || $value instanceof Carbon;
     }
 
     /**
@@ -42,7 +43,7 @@ class TimestampType extends ScalarType
      */
     public function message(): string
     {
-        return ":attribute must be a valid timestamp";
+        return ":attribute must be a valid timestamp or Carbon object";
     }
 
     /**
@@ -56,6 +57,10 @@ class TimestampType extends ScalarType
     public function format($value, ArgumentBag $arguments)
     {
         $format = $arguments->get('format') ?: $this->format;
+
+        if ($value instanceof Carbon) {
+            return $value->format($format);    
+        }
 
         return date($format, strtotime($value));
     }
