@@ -5,6 +5,7 @@ namespace Jeql;
 use Jeql\Http\Controllers\BatchController;
 use Jeql\Http\Controllers\IntrospectController;
 use Jeql\Http\Controllers\OperationsController;
+use Jeql\Http\Middleware\CatchExceptions;
 use Laravel\Lumen\Routing\Router;
 
 class Jeql
@@ -15,11 +16,23 @@ class Jeql
     /**
      * Register the typical JEQL routes for an application.
      *
+     * @param \Laravel\Lumen\Routing\Router $router
+     * @param array $groupOptions
+     *
      * @return void
      */
-    public static function routes(Router $router)
+    public static function routes(Router $router, array $groupOptions = [])
     {
-        $router->group(['namespace' => '\\'], function ($router) {
+        // Add the "catch exceptions" middleware at the start of the group's
+        // middleware to ensure that all exceptions thrown within the group are
+        // formatted correctly.
+        if (isset($groupOptions['middleware'])) {
+            array_unshift($groupOptions['middleware'], CatchExceptions::class);
+        }
+
+        $groupOptions['namespace'] = '\\';
+
+        $router->group($groupOptions, function ($router) {
             // Route to handle batch calls
             $router->post('_batch', BatchController::class . '@handle');
 

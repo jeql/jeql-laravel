@@ -25,7 +25,7 @@ abstract class InputSpecification implements Specification, HasInputSpecificatio
      * @param string $classname
      *
      * @return Specification
-     * @throws \Exception
+     * @throws \UnexpectedValueException
      */
     public static function instantiate(string $classname): Specification
     {
@@ -38,7 +38,9 @@ abstract class InputSpecification implements Specification, HasInputSpecificatio
 
         // Make sure instance is instance of Specification
         if (!$instance instanceof Specification) {
-            throw new \Exception("{$classname} is not an instance of InputSpecification");
+            throw new \UnexpectedValueException(
+                sprintf('%s must be an instance of %s', $classname, Specification::class)
+            );
         }
 
         // Store instance for reusability

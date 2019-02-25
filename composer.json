@@ -3,6 +3,7 @@
   "description": "JEQL Laravel package",
   "keywords": [],
   "require": {
+    "ext-json": "*",
     "laravel/lumen-framework": "5.7.*"
   },
   "require-dev": {},

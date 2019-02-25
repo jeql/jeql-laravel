@@ -19,17 +19,7 @@ class JeqlServiceProvider extends ServiceProvider
             return new TypeRegistry;
         });
 
-        // Register OperationRegistry
-        $this->app->singleton(OperationRegistry::class);
-        $this->app->resolving(OperationRegistry::class, function (OperationRegistry $operations) {
-            $path = Jeql::getOperationsPath();
-
-            if (!file_exists($path)) {
-                throw new \Exception("Could not find operations for path: {$path}");
-            }
-
-            require_once($path);
-        });
+        $this->registerOperationRegistry();
     }
 
     /**
@@ -39,5 +29,23 @@ class JeqlServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+    }
+
+    /**
+     * Bind the operation registry to the app container.
+     */
+    protected function registerOperationRegistry()
+    {
+        $this->app->singleton(OperationRegistry::class);
+
+        $this->app->resolving(OperationRegistry::class, function (OperationRegistry $operations) {
+            $path = Jeql::getOperationsPath();
+
+            if (!file_exists($path)) {
+                throw new \RuntimeException("Operation routes file not found at {$path}");
+            }
+
+            require_once($path);
+        });
     }
 }
