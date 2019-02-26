@@ -54,14 +54,14 @@ class OfType extends ScalarType implements ReferenceType
     }
 
     /**
-     * @param array|HasInputSpecifications $expectations
+     * @param array|HasInputSpecifications $argumentsSpecifications
      *
      * @return $this
      */
-    public function withExpectations($expectations): ReferenceType
+    public function acceptsArguments($argumentsSpecifications): ReferenceType
     {
         // Set expectations to Output Specification
-        $this->getSpecification()->setInputSpecifications($expectations);
+        $this->getSpecification()->setInputSpecifications($argumentsSpecifications);
 
         return $this;
     }

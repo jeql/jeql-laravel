@@ -25,7 +25,7 @@ abstract class InputSpecification implements Specification, HasInputSpecificatio
         $instance = new $classname;
 
         // Make sure instance is instance of Specification
-        if (!$instance instanceof Specification) {
+        if (!$instance instanceof self) {
             throw new \UnexpectedValueException(
                 sprintf('%s must be an instance of %s', $classname, Specification::class)
             );

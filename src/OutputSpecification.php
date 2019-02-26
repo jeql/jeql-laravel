@@ -32,7 +32,7 @@ abstract class OutputSpecification implements Specification, HasOutputSpecificat
         $instance = new $classname;
 
         // Make sure instance is instance of Specification
-        if (!$instance instanceof Specification) {
+        if (!$instance instanceof self) {
             throw new \UnexpectedValueException(
                 sprintf('%s must be an instance of %s', $classname, Specification::class)
             );
@@ -64,21 +64,21 @@ abstract class OutputSpecification implements Specification, HasOutputSpecificat
     }
 
     /**
-     * @param array|HasInputSpecifications $expectations
+     * @param array|HasInputSpecifications $argumentsSpecifications
      *
      * @return void
      * @throws \InvalidArgumentException
      */
-    public function setInputSpecifications($expectations)
+    public function setInputSpecifications($argumentsSpecifications)
     {
-        if ($expectations instanceof HasInputSpecifications) {
-            $this->inputSpecifications = $expectations->getInputSpecifications();
+        if ($argumentsSpecifications instanceof HasInputSpecifications) {
+            $this->inputSpecifications = $argumentsSpecifications->getInputSpecifications();
 
             return;
         }
 
-        if (is_array($expectations)) {
-            $this->inputSpecifications = new SpecificationBag($expectations);
+        if (is_array($argumentsSpecifications)) {
+            $this->inputSpecifications = new SpecificationBag($argumentsSpecifications);
 
             return;
         }
