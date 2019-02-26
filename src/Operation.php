@@ -2,13 +2,13 @@
 
 namespace Jeql;
 
+use Jeql\Contracts\ReferenceType;
 use Jeql\Contracts\Specification;
 use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\HasOutputSpecifications;
 use \Jeql\Contracts\Operation as OperationContract;
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\ListOfType;
-use Jeql\ScalarTypes\OfType;
 use Jeql\Traits\HandleInputSpecifications;
 use Jeql\Traits\HandleOutputSpecifications;
 
@@ -45,8 +45,9 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
      * @param mixed $data
      *
      * @return array
+     * @throws \Exception
      */
-    public function respond(Request $request, Specification $specification, $data)
+    public function respond(Request $request, Specification $specification, $data): array
     {
         $output = [];
         $requestedFields = $request->getFields();
@@ -63,23 +64,42 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
                 $fieldValue = $fieldType->format($fieldValue, $fieldRequest->getArguments());
             }
 
-            // Handle ListOfType output recursively
-            if ($fieldType instanceof ListOfType) {
-                foreach ($fieldValue as $index => $item) {
-                    $output[$fieldName][$index] = $this->respond($fieldRequest, $fieldType->getSpecification(), $item);
+            if ($fieldType instanceof ReferenceType) {
+                // Check if field is defined (may be null but not missing)
+                if (!$this->isFieldDefined($data, $fieldName)) {
+                    throw new \Exception("{$fieldName} is missing in response data.");
                 }
 
-                continue;
-            }
 
-            // Handle specification output recursively
-            if ($fieldType instanceof OfType) {
-                $output[$fieldName] = $this->respond($fieldRequest, $fieldType->getSpecification(), $fieldValue);
+                $output[$fieldName] = $this->respondToReferenceType($fieldType, $fieldRequest, $fieldValue);
 
                 continue;
             }
 
             $output[$fieldName] = $fieldValue;
+        }
+
+        return $output;
+    }
+
+    /**
+     * @param ReferenceType $fieldType
+     * @param Request $fieldRequest
+     * @param mixed $fieldValue
+     *
+     * @return array
+     */
+    protected function respondToReferenceType(ReferenceType $fieldType, Request $fieldRequest, $fieldValue): array
+    {
+        if (!$fieldType instanceof ListOfType) {
+            return $this->respond($fieldRequest, $fieldType->getSpecification(), $fieldValue);
+        }
+
+        // Handle ListOfType output recursively
+        $output = [];
+
+        foreach ($fieldValue ?: [] as $index => $item) {
+            $output[$index] = $this->respond($fieldRequest, $fieldType->getSpecification(), $item);
         }
 
         return $output;
@@ -98,6 +118,17 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
         }
 
         return data_get($data, camel_case($fieldName));
+    }
+
+    /**
+     * @param mixed $data
+     * @param string $fieldName
+     *
+     * @return bool
+     */
+    private function isFieldDefined($data, $fieldName): bool
+    {
+        return is_array($data) ? isset($data[$fieldName]) : isset($data->$fieldName);
     }
 
     /**
