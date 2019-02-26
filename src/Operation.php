@@ -65,7 +65,6 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
             }
 
             if ($fieldType instanceof ReferenceType) {
-                // Check if field is defined (may be null but not missing)
                 if (!$this->isFieldDefined($data, $fieldName)) {
                     throw new \Exception("{$fieldName} is missing in response data.");
                 }
@@ -106,6 +105,8 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
     }
 
     /**
+     * Get the field value from given data by field name
+     * 
      * @param mixed $data
      * @param string $fieldName
      *
@@ -121,6 +122,8 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
     }
 
     /**
+     * Check if field is defined (may be null but not missing)
+     *
      * @param mixed $data
      * @param string $fieldName
      *
