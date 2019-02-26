@@ -2,6 +2,7 @@
 
 namespace Jeql;
 
+use Jeql\Contracts\ReferenceType;
 use Jeql\Contracts\ScalarType;
 use Jeql\ScalarTypes\BooleanType;
 use Jeql\ScalarTypes\EnumType;
@@ -89,9 +90,9 @@ class TypeRegistry
     /**
      * @param string $specification
      *
-     * @return ScalarType
+     * @return OfType
      */
-    public function of(string $specification): ScalarType
+    public function of(string $specification): OfType
     {
         return new OfType($specification);
     }
@@ -99,9 +100,9 @@ class TypeRegistry
     /**
      * @param string $specification
      *
-     * @return ScalarType
+     * @return ListOfType
      */
-    public function listOf(string $specification): ScalarType
+    public function listOf(string $specification): ListOfType
     {
         return new ListOfType($specification);
     }
