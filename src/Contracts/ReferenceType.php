@@ -14,5 +14,5 @@ interface ReferenceType
      *
      * @return ReferenceType
      */
-    public function withExpectations($expectations): self;
+    public function withExpectations($expectations): ReferenceType;
 }

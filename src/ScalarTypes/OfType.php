@@ -2,6 +2,7 @@
 
 namespace Jeql\ScalarTypes;
 
+use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\ReferenceType;
 use Jeql\Contracts\Specification;
 use Jeql\OutputSpecification;
@@ -57,7 +58,7 @@ class OfType extends ScalarType implements ReferenceType
      *
      * @return $this
      */
-    public function withExpectations($expectations): self
+    public function withExpectations($expectations): ReferenceType
     {
         // Set expectations to Output Specification
         $this->getSpecification()->setInputSpecifications($expectations);
