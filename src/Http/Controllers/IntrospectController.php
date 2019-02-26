@@ -4,13 +4,11 @@ namespace Jeql\Http\Controllers;
 
 use Illuminate\Http\Request as HttpRequest;
 use Jeql\Bags\SpecificationBag;
+use Jeql\Contracts\ReferenceType;
 use Jeql\Contracts\Specification;
 use Jeql\Contracts\Operation;
 use Jeql\InputSpecification;
 use Jeql\OperationRegistry;
-use Jeql\OutputSpecification;
-use Jeql\ScalarTypes\ListOfType;
-use Jeql\ScalarTypes\OfType;
 use Jeql\ScalarTypes\ScalarType;
 
 class IntrospectController
@@ -135,7 +133,7 @@ class IntrospectController
         $outputs = [];
 
         foreach ($outputSpecifications->all() as $fieldName => $output) {
-            if ($output instanceof ListOfType || $output instanceof OfType) {
+            if ($output instanceof ReferenceType) {
                 $subSpecification = $output->getSpecification();
 
                 $outputs[] = [

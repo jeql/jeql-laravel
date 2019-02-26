@@ -6,12 +6,11 @@ use Illuminate\Support\Facades\Validator;
 use Jeql\Bags\ArgumentBag;
 use Jeql\Bags\SpecificationBag;
 use Jeql\Bags\RequestBag;
+use Jeql\Contracts\ReferenceType;
 use Jeql\Contracts\Specification;
 use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\HasOutputSpecifications;
 use Jeql\Contracts\ScalarType;
-use Jeql\ScalarTypes\ListOfType;
-use Jeql\ScalarTypes\OfType;
 use Jeql\Exceptions\ValidationException;
 
 class JeqlValidator
@@ -108,7 +107,7 @@ class JeqlValidator
             if ($subFields->isNotEmpty()) {
                 $subFieldSpecification = $specifiedOuput->get($name);
 
-                if ($subFieldSpecification instanceof ListOfType || $subFieldSpecification instanceof OfType) {
+                if ($subFieldSpecification instanceof ReferenceType) {
                     $this->validate($subFieldSpecification->getSpecification(), $requestedField);
 
                     continue;

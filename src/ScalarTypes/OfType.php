@@ -2,10 +2,11 @@
 
 namespace Jeql\ScalarTypes;
 
+use Jeql\Contracts\ReferenceType;
 use Jeql\Contracts\Specification;
 use Jeql\OutputSpecification;
 
-class OfType extends ScalarType
+class OfType extends ScalarType implements ReferenceType
 {
     /** @var string */
     protected $specification;
@@ -52,7 +53,7 @@ class OfType extends ScalarType
     }
 
     /**
-     * @param $expectations
+     * @param array|HasInputSpecifications $expectations
      *
      * @return $this
      */

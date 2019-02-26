@@ -7,22 +7,17 @@ use Jeql\Contracts\HasInputSpecifications;
 use Jeql\Contracts\Specification;
 use Jeql\Contracts\HasOutputSpecifications;
 use Jeql\Contracts\ScalarType;
+use Jeql\Traits\HandleOutputSpecifications;
 
 abstract class OutputSpecification implements Specification, HasOutputSpecifications, HasInputSpecifications
 {
-    /** @var null|SpecificationBag */
-    protected $outputSpecifications;
+    use HandleOutputSpecifications;
 
     /** @var null|SpecificationBag */
     protected $inputSpecifications;
 
     /** @var array */
     protected static $__specifications = [];
-
-    /**
-     * @return array
-     */
-    abstract protected function outputs(): array;
 
     /**
      * Instatiate output specification
@@ -69,35 +64,22 @@ abstract class OutputSpecification implements Specification, HasOutputSpecificat
     }
 
     /**
-     * @param string $key
-     *
-     * @return ScalarType|OutputSpecification|mixed|null
-     */
-    public function getOutput(string $key)
-    {
-        return $this->getOutputSpecifications()->get($key);
-    }
-
-    /**
-     * @return SpecificationBag
-     */
-    public function getOutputSpecifications(): SpecificationBag
-    {
-        if (!$this->outputSpecifications) {
-            $this->outputSpecifications = new SpecificationBag($this->outputs());
-        }
-
-        return $this->outputSpecifications;
-    }
-
-    /**
-     * @param array $expectations
+     * @param array|HasInputSpecifications $expectations
      *
      * @return void
+     * @throws \InvalidArgumentException
      */
-    public function setInputSpecifications(array $expectations)
+    public function setInputSpecifications($expectations)
     {
-        $this->inputSpecifications = new SpecificationBag($expectations);
+        if ($expectations instanceof HasInputSpecifications) {
+            $this->inputSpecifications = $expectations->getInputSpecifications();
+        }
+
+        if (is_array($expectations)) {
+            $this->inputSpecifications = new SpecificationBag($expectations);
+        }
+
+        throw new \InvalidArgumentException('Argument must be an array or instanceof InputSpecification');
     }
 
     /**
