@@ -7,8 +7,14 @@ use Jeql\OutputSpecification;
 
 class OfType extends ScalarType
 {
-    /** @var OutputSpecification */
+    /** @var string */
     protected $specification;
+
+    /** @var null|Specification */
+    protected $specificationInstance;
+
+    /** @var  */
+    protected $expecations;
 
     /**
      * @param string $specification
@@ -19,11 +25,18 @@ class OfType extends ScalarType
     }
 
     /**
+     * Return specification instance, instantiate once per request for Scalar Type
+     *
      * @return Specification
+     * @throws \Exception
      */
     public function getSpecification(): Specification
     {
-        return OutputSpecification::instantiate($this->specification);
+        if (!$this->specificationInstance) {
+            $this->specificationInstance = OutputSpecification::instantiate($this->specification);
+        }
+
+        return $this->specificationInstance;
     }
 
     /**
@@ -36,5 +49,18 @@ class OfType extends ScalarType
     public function isValid($value): bool
     {
         return true;
+    }
+
+    /**
+     * @param $expectations
+     *
+     * @return $this
+     */
+    public function withExpectations($expectations): self
+    {
+        // Set expectations to Output Specification
+        $this->getSpecification()->setInputSpecifications($expectations);
+
+        return $this;
     }
 }

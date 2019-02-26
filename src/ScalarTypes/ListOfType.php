@@ -2,30 +2,8 @@
 
 namespace Jeql\ScalarTypes;
 
-use Jeql\Contracts\Specification;
-use Jeql\OutputSpecification;
-
-class ListOfType extends ScalarType
+class ListOfType extends OfType
 {
-    /** @var OutputSpecification */
-    protected $specification;
-
-    /**
-     * @param string $specification
-     */
-    public function __construct(string $specification)
-    {
-        $this->specification = $specification;
-    }
-
-    /**
-     * @return Specification
-     */
-    public function getSpecification(): Specification
-    {
-        return OutputSpecification::instantiate($this->specification);
-    }
-
     /**
      * Determine if the validation rule passes.
      *

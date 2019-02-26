@@ -129,7 +129,7 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
 
         // Return specification bag from given output specification classname
         if (is_string($inputSpecifications)) {
-            $inputSpecification = InputSpecification::instantiate($inputSpecifications);
+            $inputSpecification = InputSpecification::instantiateOnce($inputSpecifications);
 
             $this->inputSpecifications = $inputSpecification->getInputSpecifications();
 
@@ -172,7 +172,7 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
 
         // Return specification bag from given output specification classname
         if (is_string($outputSpecifications)) {
-            $outputSpecification = OutputSpecification::instantiate($outputSpecifications);
+            $outputSpecification = OutputSpecification::instantiateOnce($outputSpecifications);
 
             $this->outputSpecifications = $outputSpecification->getOutputSpecifications();
 

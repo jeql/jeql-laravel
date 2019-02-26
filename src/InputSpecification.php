@@ -29,11 +29,6 @@ abstract class InputSpecification implements Specification, HasInputSpecificatio
      */
     public static function instantiate(string $classname): Specification
     {
-        // See if already instantiate once
-        if ($instance = static::$__specifications[$classname] ?? '') {
-            return $instance;
-        }
-
         $instance = new $classname;
 
         // Make sure instance is instance of Specification
@@ -42,6 +37,23 @@ abstract class InputSpecification implements Specification, HasInputSpecificatio
                 sprintf('%s must be an instance of %s', $classname, Specification::class)
             );
         }
+
+        return $instance;
+    }
+
+    /**
+     * @param string $classname
+     *
+     * @return Specification
+     */
+    public static function instantiateOnce(string $classname): Specification
+    {
+        // See if already instantiate once
+        if ($instance = static::$__specifications[$classname] ?? '') {
+            return $instance;
+        }
+
+        $instance = static::instantiate($classname);
 
         // Store instance for reusability
         static::$__specifications[$classname] = $instance;
