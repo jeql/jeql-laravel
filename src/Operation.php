@@ -106,7 +106,7 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
 
     /**
      * Get the field value from given data by field name
-     * 
+     *
      * @param mixed $data
      * @param string $fieldName
      *
@@ -131,7 +131,13 @@ abstract class Operation implements Specification, OperationContract, HasInputSp
      */
     private function isFieldDefined($data, $fieldName): bool
     {
-        return is_array($data) ? isset($data[$fieldName]) : isset($data->$fieldName);
+        $alternativeFieldName = camel_case($fieldName);
+
+        if (is_array($data)) {
+            return isset($data[$fieldName]) ||  isset($data[$alternativeFieldName]);
+        }
+
+        return isset($data->$fieldName) || isset($data->$alternativeFieldName);
     }
 
     /**
