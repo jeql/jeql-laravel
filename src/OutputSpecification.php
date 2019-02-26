@@ -73,10 +73,14 @@ abstract class OutputSpecification implements Specification, HasOutputSpecificat
     {
         if ($expectations instanceof HasInputSpecifications) {
             $this->inputSpecifications = $expectations->getInputSpecifications();
+
+            return;
         }
 
         if (is_array($expectations)) {
             $this->inputSpecifications = new SpecificationBag($expectations);
+
+            return;
         }
 
         throw new \InvalidArgumentException('Argument must be an array or instanceof InputSpecification');
